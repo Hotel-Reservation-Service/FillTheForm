@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">FillTheForm</string>
+    <string name="action_app_settings">App Settings</string>
+    <string name="action_draw_over_other_apps_setting">Draw over other apps</string>
+    <string name="action_accessibility_settings">Accessibility settings</string>
+    <string name="action_sample_app_configuration_file">Sample app config file</string>
+
+    <string name="service_description">Accessibility service needed by FillTheForm functionality.</string>
+
+    <string name="permissions_title">Please enable the following permissions:</string>
+    <string name="permission_enable_button">Enable</string>
+    <string name="permission_system_alert_window">SYSTEM_ALERT_WINDOW\nfor displaying the overlay dialog.</string>
+    <string name="permission_system_alert_window_already_enabled">SYSTEM_ALERT_WINDOW already enabled.</string>
+
+    <string name="load_configuration_file_title_text">Load the configuration from</string>
+    <string name="select_configuration_file_button">Select another file</string>
+    <string name="load_configuration_file_button">Load configuration</string>
+    <string name="error_loading_configuration_file_prefix">Error loading config file!\n</string>
+
+    <string name="loaded_package_names_title">Loaded package names:</string>
+    <string name="loaded_package_names_empty">You need to load the configuration file first.</string>
+    <string name="app_is_not_installed">This app is not installed on your phone.</string>
+
+    <string name="values_not_found">No values for this field.</string>
+    <string name="profile_not_found">No profile</string>
+
+    <string name="dialog_menu_title">FillTheForm</string>
+    <string name="dialog_menu_close">Close FillTheForm dialog</string>
+    <string name="dialog_menu_minimize">Minimize FillTheForm dialog</string>
+    <string name="dialog_menu_open_fill_the_form_app">Open FillTheForm app</string>
+    <string name="dialog_expand">Expand FillTheForm dialog</string>
+</resources>

@@ -1,0 +1,34 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="DialogItemNormal">
+        <item name="android:textColor">@color/dialog_item_color</item>
+        <item name="android:textSize">@dimen/dialog_menu_item_text_size</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="DialogItemContext">
+        <item name="android:textColor">@color/dialog_item_profile_color</item>
+        <item name="android:textSize">@dimen/dialog_menu_item_context_text_size</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="DialogItemPressed" parent="DialogItemNormal">
+        <item name="android:textColor">@android:color/holo_green_dark</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="DialogTitle">
+        <item name="android:textColor">@color/dialog_title_color</item>
+        <item name="android:textSize">@dimen/dialog_title_text_size</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+</resources>

@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">FillTheFormSample</string>
+    <string name="action_open_fill_the_form_app">Open FillTheForm app</string>
+    <string name="header">Load \'sample_app_config.xml\' in the FillTheForm app. Then you can fill out this form using long press:</string>
+    <string name="first_name">first name</string>
+    <string name="last_name">last name</string>
+    <string name="email">email</string>
+    <string name="city">city</string>
+    <string name="state">state</string>
+    <string name="country">country</string>
+    <string name="phone">phone</string>
+    <string name="zip_code">zip code</string>
+    <string name="comment">comment</string>
+</resources>
