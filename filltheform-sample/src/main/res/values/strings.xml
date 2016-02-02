@@ -11,4 +11,7 @@
     <string name="phone">phone</string>
     <string name="zip_code">zip code</string>
     <string name="comment">comment</string>
+    <string name="device_model">device model</string>
+    <string name="android_version">android version</string>
+    <string name="device_ip_address">device ip address</string>
 </resources>

@@ -29,4 +29,6 @@
     <string name="dialog_menu_minimize">Minimize FillTheForm dialog</string>
     <string name="dialog_menu_open_fill_the_form_app">Open FillTheForm app</string>
     <string name="dialog_expand">Expand FillTheForm dialog</string>
+
+    <string name="device_ip_address_failure">"Unable to get device IP address"</string>
 </resources>
