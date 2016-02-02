@@ -35,4 +35,6 @@ public interface ConfigurationReader {
     }
 
     void readConfigurationFile(@ConfigurationSource int source, @NonNull String configurationFileUri);
+
+    String getConfigurationVariablePattern();
 }

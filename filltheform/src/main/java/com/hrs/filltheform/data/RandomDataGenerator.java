@@ -23,7 +23,7 @@ import com.thedeanda.lorem.LoremIpsum;
  * These constants indicate which type of random data is needed for which id.
  * The following library is used for generating random content: https://github.com/mdeanda/lorem
  */
-public class RandomDataGenerator {
+class RandomDataGenerator {
 
     private static final String FIRST_NAME = "random_first_name";
     private static final String FIRST_NAME_MALE = "random_first_name_male";
@@ -46,104 +46,51 @@ public class RandomDataGenerator {
     private static final String TEXT = "random_text";
     private static final String PARAGRAPH = "random_paragraph";
 
-    private static Lorem lorem;
+    private Lorem lorem;
 
-    public static void init() {
-        if (lorem == null) {
-            lorem = LoremIpsum.getInstance();
-        }
+    public RandomDataGenerator() {
+        this.lorem = LoremIpsum.getInstance();
     }
 
-    public static boolean isRandomKey(String key) {
+    public String getRandomContent(String key) {
         switch (key) {
             case FIRST_NAME:
+                return lorem.getFirstName();
             case FIRST_NAME_MALE:
+                return lorem.getFirstNameMale();
             case FIRST_NAME_FEMALE:
+                return lorem.getFirstNameFemale();
             case LAST_NAME:
+                return lorem.getLastName();
             case NAME:
+                return lorem.getName();
             case NAME_MALE:
+                return lorem.getNameMale();
             case NAME_FEMALE:
+                return lorem.getNameFemale();
             case EMAIL:
+                return lorem.getEmail();
             case CITY:
+                return lorem.getCity();
             case COUNTRY:
+                return lorem.getCountry();
             case PHONE:
+                return lorem.getPhone();
             case STATE_ABBREVIATION:
+                return lorem.getStateAbbr();
             case STATE:
+                return lorem.getStateFull();
             case ZIP_CODE:
+                return lorem.getZipCode();
             case WORD:
+                return lorem.getWords(1);
             case TEXT:
+                return lorem.getWords(1, 20);
             case PARAGRAPH:
-                return true;
+                return lorem.getParagraphs(1, 20);
             default:
-                return false;
+                return null;
         }
-    }
-
-    public static String getRandomContent(String key) {
-        if (lorem == null) {
-            lorem = LoremIpsum.getInstance();
-        }
-
-        String randomContent;
-
-        switch (key) {
-            case FIRST_NAME:
-                randomContent = lorem.getFirstName();
-                break;
-            case FIRST_NAME_MALE:
-                randomContent = lorem.getFirstNameMale();
-                break;
-            case FIRST_NAME_FEMALE:
-                randomContent = lorem.getFirstNameFemale();
-                break;
-            case LAST_NAME:
-                randomContent = lorem.getLastName();
-                break;
-            case NAME:
-                randomContent = lorem.getName();
-                break;
-            case NAME_MALE:
-                randomContent = lorem.getNameMale();
-                break;
-            case NAME_FEMALE:
-                randomContent = lorem.getNameFemale();
-                break;
-            case EMAIL:
-                randomContent = lorem.getEmail();
-                break;
-            case CITY:
-                randomContent = lorem.getCity();
-                break;
-            case COUNTRY:
-                randomContent = lorem.getCountry();
-                break;
-            case PHONE:
-                randomContent = lorem.getPhone();
-                break;
-            case STATE_ABBREVIATION:
-                randomContent = lorem.getStateAbbr();
-                break;
-            case STATE:
-                randomContent = lorem.getStateFull();
-                break;
-            case ZIP_CODE:
-                randomContent = lorem.getZipCode();
-                break;
-            case WORD:
-                randomContent = lorem.getWords(1);
-                break;
-            case TEXT:
-                randomContent = lorem.getWords(1, 20);
-                break;
-            case PARAGRAPH:
-                randomContent = lorem.getParagraphs(1, 20);
-                break;
-            default:
-                randomContent = lorem.getWords(1);
-                break;
-        }
-
-        return randomContent;
     }
 
 }
