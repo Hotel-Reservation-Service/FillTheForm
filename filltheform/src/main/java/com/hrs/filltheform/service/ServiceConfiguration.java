@@ -97,4 +97,11 @@ public class ServiceConfiguration implements ConfigurationReaderListener {
     public List<String> getPackageNames() {
         return packageNames;
     }
+
+    public String getConfigurationVariablePattern() {
+        if (configurationReader != null) {
+            return configurationReader.getConfigurationVariablePattern();
+        }
+        return null;
+    }
 }
