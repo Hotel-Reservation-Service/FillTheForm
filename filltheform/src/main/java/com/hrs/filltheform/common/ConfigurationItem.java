@@ -24,19 +24,21 @@ public class ConfigurationItem {
 
     private String id;
     private String profile;
+    private String rawValue;
     private String value;
 
-    public ConfigurationItem(String id, String profile, String value) {
+    public ConfigurationItem(String id, String profile, String rawValue) {
         this.id = id;
         this.profile = profile;
-        this.value = value;
+        this.rawValue = rawValue;
     }
 
     public ConfigurationItem(@NonNull ConfigurationItem configurationItem) {
         if (configurationItem != null) {
             this.id = configurationItem.id;
             this.profile = configurationItem.profile;
-            this.value = configurationItem.value;
+            this.rawValue = configurationItem.getRawValue();
+            this.value = configurationItem.getValue();
         }
     }
 
@@ -62,5 +64,9 @@ public class ConfigurationItem {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getRawValue() {
+        return rawValue;
     }
 }

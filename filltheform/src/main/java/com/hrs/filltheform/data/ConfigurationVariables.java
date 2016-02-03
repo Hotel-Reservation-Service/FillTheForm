@@ -53,6 +53,18 @@ public class ConfigurationVariables {
         this.deviceIpAddress = null;
     }
 
+    public boolean isConfigurationVariableKey(String variableKey) {
+        switch (variableKey) {
+            case DEVICE_MANUFACTURER:
+            case DEVICE_MODEL:
+            case DEVICE_ANDROID_VERSION:
+            case DEVICE_IP_ADDRESS:
+                return true;
+            default:
+                return randomDataGenerator.isRandomVariableKey(variableKey);
+        }
+    }
+
     /**
      * @param variableKey Defines the wanted value.
      * @return Null if there is no value available for the provided variableKey.

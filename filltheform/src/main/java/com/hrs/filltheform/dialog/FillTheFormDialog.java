@@ -90,6 +90,11 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
     }
 
     @Override
+    public boolean isConfigurationVariableKey(String variableKey) {
+        return configurationVariables.isConfigurationVariableKey(variableKey);
+    }
+
+    @Override
     public String getConfigurationVariableValue(String variableKey) {
         return configurationVariables.getValue(variableKey);
     }

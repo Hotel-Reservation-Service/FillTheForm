@@ -35,6 +35,7 @@ class RandomDataGenerator {
     private static final String NAME_FEMALE = "random_name_female";
 
     private static final String EMAIL = "random_email";
+    private static final String EMAIL_LOCAL_PART = "random_email_local_part";
     private static final String CITY = "random_city";
     private static final String COUNTRY = "random_country";
     private static final String PHONE = "random_phone";
@@ -50,6 +51,32 @@ class RandomDataGenerator {
 
     public RandomDataGenerator() {
         this.lorem = LoremIpsum.getInstance();
+    }
+
+    public boolean isRandomVariableKey(String variableKey) {
+        switch (variableKey) {
+            case FIRST_NAME:
+            case FIRST_NAME_MALE:
+            case FIRST_NAME_FEMALE:
+            case LAST_NAME:
+            case NAME:
+            case NAME_MALE:
+            case NAME_FEMALE:
+            case EMAIL:
+            case EMAIL_LOCAL_PART:
+            case CITY:
+            case COUNTRY:
+            case PHONE:
+            case STATE_ABBREVIATION:
+            case STATE:
+            case ZIP_CODE:
+            case WORD:
+            case TEXT:
+            case PARAGRAPH:
+                return true;
+            default:
+                return false;
+        }
     }
 
     public String getRandomContent(String key) {
@@ -70,6 +97,8 @@ class RandomDataGenerator {
                 return lorem.getNameFemale();
             case EMAIL:
                 return lorem.getEmail();
+            case EMAIL_LOCAL_PART:
+                return lorem.getEmail().replaceAll("@.*", "");
             case CITY:
                 return lorem.getCity();
             case COUNTRY:

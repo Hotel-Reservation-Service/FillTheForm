@@ -33,6 +33,8 @@ class FillTheFormDialogModel {
 
     public interface FillTheFormDialogModelHelper {
 
+        boolean isConfigurationVariableKey(String variableKey);
+
         String getConfigurationVariableValue(String variableKey);
     }
 
@@ -169,32 +171,38 @@ class FillTheFormDialogModel {
     }
 
     private ConfigurationItem prepareConfigurationItemForDialogList(ConfigurationItem configurationItem) {
-        if (helper != null && configurationVariablePattern != null && configurationItem != null) {
-            String newConfigurationItemValue = replaceVariableKeysWithValues(configurationItem.getValue());
-            return getConfigurationItemWithNewValue(configurationItem, newConfigurationItemValue);
+        if (helper != null && configurationItem != null && configurationItem.getValue() == null) {
+            if (configurationVariablePattern != null) {
+                String newConfigurationItemValue = replaceVariableKeysWithValues(configurationItem.getRawValue());
+                configurationItem.setValue(newConfigurationItemValue);
+            } else {
+                configurationItem.setValue(configurationItem.getRawValue());
+            }
         }
         return configurationItem;
     }
 
     private ConfigurationItem prepareSelectedConfigurationItemForInput() {
         if (selectedConfigItem != null) {
-            // Check if the selected config item is random value key
-            if (helper != null) {
-                String randomValue = helper.getConfigurationVariableValue(selectedConfigItem.getValue());
-                if (randomValue != null) {
-                    return getConfigurationItemWithNewValue(selectedConfigItem, randomValue);
+            // Check if the selected config item raw value is configuration variable key
+            if (helper != null && helper.isConfigurationVariableKey(selectedConfigItem.getRawValue())) {
+                String configurationVariableValue = helper.getConfigurationVariableValue(selectedConfigItem.getRawValue());
+                if (configurationVariableValue != null) {
+                    ConfigurationItem preparedConfigurationItem = new ConfigurationItem(selectedConfigItem);
+                    preparedConfigurationItem.setValue(configurationVariableValue);
+                    return preparedConfigurationItem;
                 }
+            } else if (selectedConfigItem.getValue() == null) {
+                ConfigurationItem preparedConfigurationItem = new ConfigurationItem(prepareConfigurationItemForDialogList(selectedConfigItem));
+                selectedConfigItem.setValue(null);
+                return preparedConfigurationItem;
+            } else {
+                ConfigurationItem preparedConfigurationItem = new ConfigurationItem(selectedConfigItem);
+                selectedConfigItem.setValue(null);
+                return preparedConfigurationItem;
             }
-            // Check if the selected config item has variables
-            return prepareConfigurationItemForDialogList(selectedConfigItem);
         }
         return null;
-    }
-
-    private ConfigurationItem getConfigurationItemWithNewValue(ConfigurationItem configurationItemWithOldValue, String newConfigurationItemValue) {
-        ConfigurationItem newConfigurationItem = new ConfigurationItem(configurationItemWithOldValue);
-        newConfigurationItem.setValue(newConfigurationItemValue);
-        return newConfigurationItem;
     }
 
     private String replaceVariableKeysWithValues(String text) {
