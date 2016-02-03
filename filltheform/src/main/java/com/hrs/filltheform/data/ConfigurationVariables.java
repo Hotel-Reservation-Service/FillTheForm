@@ -40,12 +40,12 @@ public class ConfigurationVariables {
     private static final String DEVICE_ANDROID_VERSION = "device_android_version";
     private static final String DEVICE_IP_ADDRESS = "device_ip_address";
 
-    private RandomDataGenerator randomDataGenerator;
-    private String deviceIpAddress;
+    private final RandomDataGenerator randomDataGenerator;
     private final String deviceIpAddressFailure;
+    private String deviceIpAddress;
 
     public ConfigurationVariables(Context context) {
-        deviceIpAddressFailure = context.getString(R.string.device_ip_address_failure);
+        this.deviceIpAddressFailure = context.getString(R.string.device_ip_address_failure);
         this.randomDataGenerator = new RandomDataGenerator();
     }
 

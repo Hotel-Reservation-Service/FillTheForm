@@ -142,23 +142,11 @@
             android:layout_marginTop="@dimen/activity_vertical_margin">
 
             <EditText
-                android:id="@+id/comment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/comment" />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin">
-
-            <EditText
                 android:id="@+id/device_model"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/device_model" />
+                android:hint="@string/device_model"
+                android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -171,7 +159,8 @@
                 android:id="@+id/android_version"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/android_version" />
+                android:hint="@string/android_version"
+                android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -184,7 +173,21 @@
                 android:id="@+id/device_ip_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/device_ip_address" />
+                android:hint="@string/device_ip_address"
+                android:singleLine="true" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin">
+
+            <EditText
+                android:id="@+id/comment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/comment" />
 
         </android.support.design.widget.TextInputLayout>
 

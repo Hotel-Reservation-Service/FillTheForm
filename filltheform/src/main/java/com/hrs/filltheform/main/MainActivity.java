@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements PropertyChangedLi
     private static final String SAMPLE_APP_CONFIG_FILE_NAME = "sample_app_config.xml";
     private static final String ACCESSIBILITY_SERVICE = "com.hrs.filltheform/com.hrs.filltheform.service.MyAccessibilityService";
 
-    private static final String MY_SHARED_PREFERENCES = "FillTheFormPreferences";
+    public static final String MY_SHARED_PREFERENCES = "FillTheFormPreferences";
     private static final int SYSTEM_ALERT_WINDOW_REQUEST_CODE = 123;
     private static final int FILE_OPEN_REQUEST_CODE = 125;
 

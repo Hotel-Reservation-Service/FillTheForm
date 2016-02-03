@@ -20,6 +20,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
@@ -33,6 +34,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -41,6 +43,7 @@ import com.hrs.filltheform.R;
 import com.hrs.filltheform.common.ConfigurationItem;
 import com.hrs.filltheform.common.PropertyChangedListener;
 import com.hrs.filltheform.data.ConfigurationVariables;
+import com.hrs.filltheform.main.MainActivity;
 
 import java.util.List;
 
@@ -49,19 +52,23 @@ import java.util.List;
  */
 public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDialogModel.FillTheFormDialogModelHelper {
 
+    private static final String FAST_MODE_ENABLED_KEY = "fast_mode_enabled_key";
+
     private WindowManager windowManager;
     private FrameLayout dialogView;
     private WindowManager.LayoutParams dialogParams;
     private View expandIcon;
+    private View expandIconFastMode;
     private View dialogMenu;
     private RecyclerView configurationItemsView;
+    private ImageButton fastModeButton;
 
-    private Context appContext;
-    private FillTheFormDialogModel model;
-    private AccessibilityNodeInfo selectedNodeInfo;
-    private int dialogInitialOffset;
+    private final Context appContext;
+    private final FillTheFormDialogModel model;
+    private final int dialogInitialOffset;
+    private final ConfigurationVariables configurationVariables;
     private ConfigurationItemsAdapter configurationItemsAdapter;
-    private ConfigurationVariables configurationVariables;
+    private AccessibilityNodeInfo selectedNodeInfo;
 
     public FillTheFormDialog(Context context) {
         this.appContext = context.getApplicationContext();
@@ -80,23 +87,28 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
         model.setStatusBarHeight(getStatusBarHeight());
         // Prepare dialog view
         prepareDialogView();
+        // Read fast mode config from shared prefs
+        readFastModeConfigFromSharedPreferences();
         // Init configuration variables
         this.configurationVariables = new ConfigurationVariables(context);
     }
 
-    public void showDialog(AccessibilityNodeInfo selectedNodeInfo, List<ConfigurationItem> selectedConfigurationItems) {
+    public void showDialog(AccessibilityNodeInfo selectedNodeInfo, int accessibilityEventType, List<ConfigurationItem> selectedConfigurationItems) {
         this.selectedNodeInfo = selectedNodeInfo;
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(getModelEventType(accessibilityEventType), selectedConfigurationItems);
     }
 
-    @Override
-    public boolean isConfigurationVariableKey(String variableKey) {
-        return configurationVariables.isConfigurationVariableKey(variableKey);
-    }
-
-    @Override
-    public String getConfigurationVariableValue(String variableKey) {
-        return configurationVariables.getValue(variableKey);
+    private int getModelEventType(int accessibilityEventType) {
+        switch (accessibilityEventType) {
+            case AccessibilityEvent.TYPE_VIEW_LONG_CLICKED:
+                return FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED;
+            case AccessibilityEvent.TYPE_VIEW_CLICKED:
+                return FillTheFormDialogModel.EVENT_TYPE_VIEW_CLICKED;
+            case AccessibilityEvent.TYPE_VIEW_FOCUSED:
+                return FillTheFormDialogModel.EVENT_TYPE_VIEW_FOCUSED;
+            default:
+                return FillTheFormDialogModel.EVENT_TYPE_UNKNOWN;
+        }
     }
 
     public void setConfigurationVariablePattern(String configurationVariablePattern) {
@@ -125,7 +137,7 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
 
         dialogView = new FrameLayout(appContext);
         dialogView.setOnTouchListener(new View.OnTouchListener() {
-            Point screenSize = new Point();
+            final Point screenSize = new Point();
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -147,9 +159,10 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
             }
         });
 
-        @SuppressLint("InflateParams") View dialogContent = LayoutInflater.from(appContext).inflate(R.layout.dialog, null);
+        @SuppressLint("InflateParams") final View dialogContent = LayoutInflater.from(appContext).inflate(R.layout.dialog, null);
         dialogMenu = dialogContent.findViewById(R.id.dialog_menu);
         expandIcon = dialogContent.findViewById(R.id.expand_icon);
+        expandIconFastMode = dialogContent.findViewById(R.id.expand_icon_fast_mode);
 
         // Set up dialog content
         ImageButton closeButton = (ImageButton) dialogContent.findViewById(R.id.close_button);
@@ -171,6 +184,13 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
             @Override
             public void onClick(View v) {
                 model.onOpenFillTheFormAppButtonClicked();
+            }
+        });
+        fastModeButton = (ImageButton) dialogContent.findViewById(R.id.fast_mode_button);
+        fastModeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                model.toggleFastMode();
             }
         });
 
@@ -217,6 +237,32 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
         }
     }
 
+    // FillTheFormDialogModelHelper methods
+
+    @Override
+    public boolean isConfigurationVariableKey(String variableKey) {
+        return configurationVariables.isConfigurationVariableKey(variableKey);
+    }
+
+    @Override
+    public String getConfigurationVariableValue(String variableKey) {
+        return configurationVariables.getValue(variableKey);
+    }
+
+    // Fast mode shared prefs management
+
+    private void storeFastModeConfigInSharedPreferences() {
+        SharedPreferences.Editor editor = appContext.getSharedPreferences(MainActivity.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE).edit();
+        editor.putBoolean(FAST_MODE_ENABLED_KEY, model.isFastModeEnabled());
+        editor.apply();
+    }
+
+    private void readFastModeConfigFromSharedPreferences() {
+        SharedPreferences prefs = appContext.getSharedPreferences(MainActivity.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        boolean fastModeEnabled = prefs.getBoolean(FAST_MODE_ENABLED_KEY, false);
+        model.setFastModeEnabled(fastModeEnabled);
+    }
+
     // Handle property changes
 
     @Override
@@ -234,6 +280,13 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
                     expandIcon.setVisibility(View.VISIBLE);
                 } else {
                     expandIcon.setVisibility(View.GONE);
+                }
+                break;
+            case FillTheFormDialogModel.PROPERTY_EXPAND_ICON_FAST_MODE:
+                if (model.isFastModeEnabled()) {
+                    expandIconFastMode.setVisibility(View.VISIBLE);
+                } else {
+                    expandIconFastMode.setVisibility(View.GONE);
                 }
                 break;
             case FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST:
@@ -273,6 +326,16 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
                 break;
             case FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES:
                 configurationVariables.clear();
+                break;
+            case FillTheFormDialogModel.PROPERTY_FAST_MODE:
+                storeFastModeConfigInSharedPreferences();
+                break;
+            case FillTheFormDialogModel.PROPERTY_FAST_MODE_BUTTON:
+                if (model.isFastModeEnabled()) {
+                    fastModeButton.setImageResource(R.drawable.ic_fast_mode);
+                } else {
+                    fastModeButton.setImageResource(R.drawable.ic_normal_mode);
+                }
                 break;
             default:
                 break;

@@ -33,8 +33,8 @@ public class ServiceEventResolver implements EventResolver {
     private static final String APP_PACKAGE_NAME = "com.hrs.filltheform";
     private static final String ANDROID_SYSTEM_UI_PREFIX = "com.android.systemui";
 
+    private final ServiceConfiguration configuration;
     private EventResolverListener eventResolverListener;
-    private ServiceConfiguration configuration;
 
     public ServiceEventResolver(@NonNull ServiceConfiguration configuration) {
         this.configuration = configuration;
@@ -76,7 +76,7 @@ public class ServiceEventResolver implements EventResolver {
                     found = true;
                     List<ConfigurationItem> selectedConfigurationItems = configuration.getIdGroups().get(idGroupKey);
                     if (eventResolverListener != null) {
-                        eventResolverListener.onDataForSelectedNodeAvailable(info, selectedConfigurationItems);
+                        eventResolverListener.onDataForSelectedNodeAvailable(info, event.getEventType(), selectedConfigurationItems);
                     }
                     break;
                 }

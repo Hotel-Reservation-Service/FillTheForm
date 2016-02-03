@@ -28,6 +28,7 @@ import com.hrs.filltheform.common.event.EventResolver;
 import com.hrs.filltheform.common.event.EventResolverListener;
 import com.hrs.filltheform.common.reader.ConfigurationReader;
 import com.hrs.filltheform.dialog.FillTheFormDialog;
+import com.hrs.filltheform.util.LogUtil;
 import com.hrs.filltheform.util.ToastUtil;
 
 import java.util.ArrayList;
@@ -39,6 +40,8 @@ import java.util.List;
  * When data for a specific AccessibilityNode is available it shows FillTheFormDialog to the user.
  */
 public class MyAccessibilityService extends android.accessibilityservice.AccessibilityService implements ServiceConfiguration.ServiceConfigurationListener, EventResolverListener {
+
+    private static final String TAG = MyAccessibilityService.class.getSimpleName();
 
     public static final String INTENT_READ_CONFIGURATION_FILE = "com.hrs.filltheform.INTENT_READ_CONFIGURATION_FILE";
     public static final String INTENT_EXTRA_CONFIGURATION_FILE_URI = "com.hrs.filltheform.INTENT_EXTRA_CONFIGURATION_FILE_URI";
@@ -112,13 +115,13 @@ public class MyAccessibilityService extends android.accessibilityservice.Accessi
     }
 
     @Override
-    public void onDataForSelectedNodeAvailable(AccessibilityNodeInfo selectedNodeInfo, List<ConfigurationItem> selectedConfigurationItems) {
-        fillTheFormDialog.showDialog(selectedNodeInfo, selectedConfigurationItems);
+    public void onDataForSelectedNodeAvailable(AccessibilityNodeInfo selectedNodeInfo, int accessibilityEventType, List<ConfigurationItem> selectedConfigurationItems) {
+        fillTheFormDialog.showDialog(selectedNodeInfo, accessibilityEventType, selectedConfigurationItems);
     }
 
     @Override
     public void onDataForSelectedNodeNotAvailable(AccessibilityNodeInfo selectedNodeInfo) {
-        ToastUtil.show(getApplicationContext(), getString(R.string.values_not_found));
+        LogUtil.d(TAG, getString(R.string.values_not_found) + selectedNodeInfo.toString());
     }
 
     // Lifecycle

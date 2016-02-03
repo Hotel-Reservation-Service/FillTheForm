@@ -34,6 +34,16 @@
             android:textAppearance="@style/DialogTitle" />
 
         <ImageButton
+            android:id="@+id/fast_mode_button"
+            android:layout_width="@dimen/dialog_menu_button_width_height"
+            android:layout_height="@dimen/dialog_menu_button_width_height"
+            android:background="@null"
+            android:contentDescription="@string/dialog_menu_open_fill_the_form_app"
+            android:padding="@dimen/dialog_menu_button_padding"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_normal_mode" />
+
+        <ImageButton
             android:id="@+id/open_fill_the_form_app_button"
             android:layout_width="@dimen/dialog_menu_button_width_height"
             android:layout_height="@dimen/dialog_menu_button_width_height"

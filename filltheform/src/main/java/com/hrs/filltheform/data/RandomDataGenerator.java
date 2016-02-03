@@ -47,7 +47,7 @@ class RandomDataGenerator {
     private static final String TEXT = "random_text";
     private static final String PARAGRAPH = "random_paragraph";
 
-    private Lorem lorem;
+    private final Lorem lorem;
 
     public RandomDataGenerator() {
         this.lorem = LoremIpsum.getInstance();

@@ -31,8 +31,8 @@ import com.hrs.filltheform.common.ConfigurationItem;
  */
 public class ConfigurationItemsAdapter extends RecyclerView.Adapter<ConfigurationItemsAdapter.ViewHolder> {
 
-    private Context appContext;
-    private FillTheFormDialogModel model;
+    private final Context appContext;
+    private final FillTheFormDialogModel model;
 
     public ConfigurationItemsAdapter(Context context, FillTheFormDialogModel model) {
         this.appContext = context.getApplicationContext();
@@ -99,8 +99,8 @@ public class ConfigurationItemsAdapter extends RecyclerView.Adapter<Configuratio
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView valueTextView;
-        public TextView profileTextView;
+        public final TextView valueTextView;
+        public final TextView profileTextView;
 
         public ViewHolder(View itemView) {
             super(itemView);
