@@ -62,15 +62,48 @@ public class FillTheFormDialogModelTest {
         model.setNormalDialogDimensions(NORMAL_DIALOG_WIDTH_PX, NORMAL_DIALOG_HEIGHT_PX);
         model.setExpandedDialogDimensions(EXPANDED_DIALOG_WIDTH_PX, EXPANDED_DIALOG_HEIGHT_PX);
         model.setStatusBarHeight(STATUS_BAR_HEIGHT_PX);
+
+        // Set configurationVariablePattern
+        model.setConfigurationVariablePattern("&(\\w+);");
     }
 
     private FillTheFormDialogModel.FillTheFormDialogModelHelper createModelHelper() {
         return new FillTheFormDialogModel.FillTheFormDialogModelHelper() {
+
+            private boolean firstNameAlreadyReturned;
+            private boolean deviceModelAlreadyReturned;
+
             @Override
-            public String getRandomValue(ConfigurationItem configurationItem) {
-                String value = configurationItem.getValue();
-                switch (value) {
+            public boolean isConfigurationVariableKey(String variableKey) {
+                switch (variableKey) {
+                    case "device_model":
+                    case "device_manufacturer":
                     case "random_first_name":
+                    case "random_last_name":
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public String getConfigurationVariableValue(String variableKey) {
+                switch (variableKey) {
+                    case "device_model":
+                        if (deviceModelAlreadyReturned) {
+                            deviceModelAlreadyReturned = false;
+                            return "Nexus 9";
+                        }
+                        deviceModelAlreadyReturned = true;
+                        return "Nexus 42";
+                    case "device_manufacturer":
+                        return "Google";
+                    case "random_first_name":
+                        if (firstNameAlreadyReturned) {
+                            firstNameAlreadyReturned = false;
+                            return "Peter";
+                        }
+                        firstNameAlreadyReturned = true;
                         return "Luke";
                     case "random_last_name":
                         return "Skywalker";
@@ -87,6 +120,7 @@ public class FillTheFormDialogModelTest {
         selectedConfigurationItems.add(new ConfigurationItem("first_name", "other_profile", "Max"));
         selectedConfigurationItems.add(new ConfigurationItem("last_name", "other_profile", "Mustermann"));
         selectedConfigurationItems.add(new ConfigurationItem("last_name", "myprofile", "Jukic"));
+        selectedConfigurationItems.add(new ConfigurationItem("last_name", "myprofile", "I have &device_model;\nfrom &device_manufacturer;"));
         return selectedConfigurationItems;
     }
 
@@ -101,10 +135,13 @@ public class FillTheFormDialogModelTest {
         // verify
         assertTrue(model.isDialogVisible());
         assertEquals(selectedConfigurationItems, model.getSortedConfigurationItems());
-        assertEquals(model.getSortedConfigurationItems().get(0).getValue(), "Ivan");
-        assertEquals(model.getSortedConfigurationItems().get(1).getValue(), "Max");
-        assertEquals(model.getSortedConfigurationItems().get(2).getValue(), "Mustermann");
-        assertEquals(model.getSortedConfigurationItems().get(3).getValue(), "Jukic");
+        assertEquals("Ivan", model.getConfigurationItem(0).getValue());
+        assertEquals("Max", model.getConfigurationItem(1).getValue());
+        assertEquals("Mustermann", model.getConfigurationItem(2).getValue());
+        assertEquals("Jukic", model.getConfigurationItem(3).getValue());
+        assertEquals("I have Nexus 42\nfrom Google", model.getConfigurationItem(4).getValue());
+        assertEquals(5, model.getItemsCount());
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
@@ -123,11 +160,13 @@ public class FillTheFormDialogModelTest {
 
         // verify
         assertTrue(model.isDialogVisible());
-        assertEquals(model.getSortedConfigurationItems().get(0).getValue(), "Ivan");
-        assertEquals(model.getSortedConfigurationItems().get(1).getValue(), "Jukic");
-        assertEquals(model.getSortedConfigurationItems().get(2).getValue(), "Max");
-        assertEquals(model.getSortedConfigurationItems().get(3).getValue(), "Mustermann");
+        assertEquals("Ivan", model.getConfigurationItem(0).getValue());
+        assertEquals("Jukic", model.getConfigurationItem(1).getValue());
+        assertEquals("I have Nexus 42\nfrom Google", model.getConfigurationItem(2).getValue());
+        assertEquals("Max", model.getConfigurationItem(3).getValue());
+        assertEquals("Mustermann", model.getConfigurationItem(4).getValue());
         assertEquals(selectedConfigurationItems.get(0).getValue(), model.getSelectedConfigItemValue());
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
         verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
         verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
         verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
@@ -147,11 +186,13 @@ public class FillTheFormDialogModelTest {
 
         // verify
         assertTrue(model.isDialogVisible());
-        assertEquals(model.getSortedConfigurationItems().get(0).getValue(), "Mustermann");
-        assertEquals(model.getSortedConfigurationItems().get(1).getValue(), "Max");
-        assertEquals(model.getSortedConfigurationItems().get(2).getValue(), "Ivan");
-        assertEquals(model.getSortedConfigurationItems().get(3).getValue(), "Jukic");
-        assertEquals("Mustermann", model.getSelectedConfigItemValue());
+        assertEquals("Max", model.getConfigurationItem(0).getValue());
+        assertEquals("Mustermann", model.getConfigurationItem(1).getValue());
+        assertEquals("Ivan", model.getConfigurationItem(2).getValue());
+        assertEquals("Jukic", model.getConfigurationItem(3).getValue());
+        assertEquals("I have Nexus 42\nfrom Google", model.getConfigurationItem(4).getValue());
+        assertEquals("Max", model.getSelectedConfigItemValue());
+        verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
         verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
         verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
         verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
@@ -172,15 +213,69 @@ public class FillTheFormDialogModelTest {
 
         // verify
         assertTrue(model.isDialogVisible());
-        assertEquals(model.getSortedConfigurationItems().get(0).getValue(), "Mustermann");
-        assertEquals(model.getSortedConfigurationItems().get(1).getValue(), "Max");
-        assertEquals(model.getSortedConfigurationItems().get(2).getValue(), "Ivan");
-        assertEquals(model.getSortedConfigurationItems().get(3).getValue(), "Jukic");
-        assertEquals("Mustermann", model.getSelectedConfigItemValue());
+        assertEquals("Max", model.getConfigurationItem(0).getValue());
+        assertEquals("Mustermann", model.getConfigurationItem(1).getValue());
+        assertEquals("Ivan", model.getConfigurationItem(2).getValue());
+        assertEquals("Jukic", model.getConfigurationItem(3).getValue());
+        assertEquals("I have Nexus 42\nfrom Google", model.getConfigurationItem(4).getValue());
+        assertEquals("Max", model.getSelectedConfigItemValue());
+        verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
         verify(propertyChangedListener, times(5)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
         verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
         verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
         verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
+    }
+
+    @Test
+    public void testWhenConfigurationVariablePatternIsNull() {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        model.setConfigurationVariablePattern(null);
+
+        // run
+        model.showDialog(selectedConfigurationItems);
+
+        // verify
+        assertTrue(model.isDialogVisible());
+        assertEquals(selectedConfigurationItems, model.getSortedConfigurationItems());
+        assertEquals("Ivan", model.getConfigurationItem(0).getValue());
+        assertEquals("Max", model.getConfigurationItem(1).getValue());
+        assertEquals("Mustermann", model.getConfigurationItem(2).getValue());
+        assertEquals("Jukic", model.getConfigurationItem(3).getValue());
+        assertEquals("I have &device_model;\nfrom &device_manufacturer;", model.getConfigurationItem(4).getValue());
+        assertEquals(5, model.getItemsCount());
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
+        assertEquals(selectedConfigurationItems.get(0).getValue(), model.getSelectedConfigItemValue());
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
+    }
+
+    @Test
+    public void testWhenConfigurationVariablePatternIsEmptyString() {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        model.setConfigurationVariablePattern("");
+
+        // run
+        model.showDialog(selectedConfigurationItems);
+
+        // verify
+        assertTrue(model.isDialogVisible());
+        assertEquals(selectedConfigurationItems, model.getSortedConfigurationItems());
+        assertEquals("Ivan", model.getConfigurationItem(0).getValue());
+        assertEquals("Max", model.getConfigurationItem(1).getValue());
+        assertEquals("Mustermann", model.getConfigurationItem(2).getValue());
+        assertEquals("Jukic", model.getConfigurationItem(3).getValue());
+        assertEquals("I have &device_model;\nfrom &device_manufacturer;", model.getConfigurationItem(4).getValue());
+        assertEquals(5, model.getItemsCount());
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
+        assertEquals(selectedConfigurationItems.get(0).getValue(), model.getSelectedConfigItemValue());
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
     }
 
     @Test
@@ -204,7 +299,7 @@ public class FillTheFormDialogModelTest {
 
         // verify
         verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
-        assertEquals(selectedConfigurationItems.get(2).getValue(), model.getSelectedConfigItemValue());
+        assertEquals(model.getConfigurationItem(2).getValue(), model.getSelectedConfigItemValue());
     }
 
     @Test
@@ -306,6 +401,104 @@ public class FillTheFormDialogModelTest {
 
         // verify
         assertEquals(selectedConfigurationItems, model.getSortedConfigurationItems());
+    }
+
+    @Test
+    public void testSelectedItemValueShouldAlternate() throws Exception {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = new ArrayList<>();
+        selectedConfigurationItems.add(new ConfigurationItem("first_name", "myprofile", "&random_first_name;"));
+
+        // run
+        model.showDialog(selectedConfigurationItems);
+
+        // verify
+        String editTextContent = model.getSelectedConfigItemValue();
+        assertEquals("Luke", editTextContent);
+
+        // run
+        model.showDialog(selectedConfigurationItems);
+
+        // verify
+        editTextContent = model.getSelectedConfigItemValue();
+        assertEquals("Peter", editTextContent);
+
+        // run
+        model.showDialog(selectedConfigurationItems);
+
+        // verify
+        editTextContent = model.getSelectedConfigItemValue();
+        assertEquals("Luke", editTextContent);
+    }
+
+    @Test
+    public void testSelectedItemValueShouldAlternateAndDialogContentShouldNotChange() throws Exception {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = new ArrayList<>();
+        selectedConfigurationItems.add(new ConfigurationItem("first_name", "myprofile", "random_first_name"));
+
+        // run
+        model.showDialog(selectedConfigurationItems);
+        model.getConfigurationItem(0);
+
+        // verify
+        String editTextContent = model.getSelectedConfigItemValue();
+        assertEquals("Luke", editTextContent);
+        String dialogListSelectedItem = model.getConfigurationItem(0).getValue();
+        assertEquals("random_first_name", dialogListSelectedItem);
+
+        // run
+        model.onConfigurationItemClicked(0);
+
+        // verify
+        editTextContent = model.getSelectedConfigItemValue();
+        assertEquals("Peter", editTextContent);
+        dialogListSelectedItem = model.getConfigurationItem(0).getValue();
+        assertEquals("random_first_name", dialogListSelectedItem);
+
+        // run
+        model.onConfigurationItemClicked(0);
+
+        // verify
+        editTextContent = model.getSelectedConfigItemValue();
+        assertEquals("Luke", editTextContent);
+        dialogListSelectedItem = model.getConfigurationItem(0).getValue();
+        assertEquals("random_first_name", dialogListSelectedItem);
+    }
+
+    @Test
+    public void testSelectedItemAndDialogContentValuesShouldAlternate() throws Exception {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = new ArrayList<>();
+        selectedConfigurationItems.add(new ConfigurationItem("user_description", "myprofile", "&random_first_name; has &device_model;"));
+
+        // run
+        model.showDialog(selectedConfigurationItems);
+        model.getConfigurationItem(0);
+
+        // verify
+        String editTextContent = model.getSelectedConfigItemValue();
+        assertEquals("Luke has Nexus 42", editTextContent);
+        String dialogListSelectedItem = model.getConfigurationItem(0).getValue();
+        assertEquals("Peter has Nexus 9", dialogListSelectedItem);
+
+        // run
+        model.onConfigurationItemClicked(0);
+
+        // verify
+        editTextContent = model.getSelectedConfigItemValue();
+        assertEquals("Peter has Nexus 9", editTextContent);
+        dialogListSelectedItem = model.getConfigurationItem(0).getValue();
+        assertEquals("Luke has Nexus 42", dialogListSelectedItem);
+
+        // run
+        model.onConfigurationItemClicked(0);
+
+        // verify
+        editTextContent = model.getSelectedConfigItemValue();
+        assertEquals("Luke has Nexus 42", editTextContent);
+        dialogListSelectedItem = model.getConfigurationItem(0).getValue();
+        assertEquals("Peter has Nexus 9", dialogListSelectedItem);
     }
 
     // Dialog position

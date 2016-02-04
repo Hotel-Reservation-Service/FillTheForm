@@ -1,11 +1,14 @@
 # FillTheForm
 
-[![Build Status](https://travis-ci.org/Hotel-Reservation-Service/FillTheForm.svg?branch=master)](https://travis-ci.org/Hotel-Reservation-Service/FillTheForm)
+[![Build Status](https://travis-ci.org/Hotel-Reservation-Service/FillTheForm.svg?branch=develop)](https://travis-ci.org/Hotel-Reservation-Service/FillTheForm)
 [![License](https://img.shields.io/badge/license-Apache%202-green.svg?style=flat)](https://github.com/Hotel-Reservation-Service/FillTheForm/blob/master/LICENSE)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-FillTheForm-green.svg?style=true)](https://android-arsenal.com/details/1/3065)
 
-FillTheForm is an Android app that that helps you to develop and test apps faster.
+FillTheForm is an Android app that that helps you to develop and test your apps faster.
 
 Now you can fill out every EditText with just a long press!
+
+![FillTheForm Teaser](http://imgur.com/4ck3K2g.gif "FillTheForm Teaser")
 
 ## FillTheForm Speed Test ##
 [![FillTheForm Speed Test](http://i.imgur.com/w3Ic0H9.png)](https://youtu.be/99MNtYpOUlk "FillTheForm Speed Test")
@@ -62,6 +65,7 @@ This is the configuration file for the FillTheFormSample app:
             <phone>+491234879625</phone>
             <zip_code>50667</zip_code>
             <comment>Viele Grüße aus NRW!</comment>
+            <device_model>Ich benutze ein &device_model; von &device_manufacturer;</device_model>
         </profile>
         <profile name="John Doe Profile">
             <first_name>John</first_name>
@@ -75,11 +79,15 @@ This is the configuration file for the FillTheFormSample app:
             <phone>(415) 321-654</phone>
             <zip_code>CA 94129</zip_code>
             <comment>Welcome to San Francisco!</comment>
+            <device_model>I am using &device_model; from &device_manufacturer;</device_model>
         </profile>
         <profile name="Random Test Profile">
             <first_name>random_first_name</first_name>
+            <first_name>My first name name is &random_first_name;</first_name>
             <last_name>random_last_name</last_name>
+            <last_name>My last name name is &random_last_name;</last_name>
             <email>random_email</email>
+            <email>&random_email_local_part;@xyz.com</email>
             <city>random_city</city>
             <state>random_state</state>
             <country>random_country</country>
@@ -94,6 +102,11 @@ This is the configuration file for the FillTheFormSample app:
     <last_name>Jukic</last_name>
     <country>Croatia</country>
     <city>Imotski</city>
+    <device_model>&device_manufacturer; &device_model;</device_model>
+    <android_version>API Level &device_android_version;</android_version>
+    <device_ip_address>Device IP is &device_ip_address;</device_ip_address>
+    <android_version>device_android_version</android_version>
+    <device_ip_address>device_ip_address</device_ip_address>
 </fillTheFormConfig>
 ```
 

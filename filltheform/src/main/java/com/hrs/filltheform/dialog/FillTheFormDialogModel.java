@@ -23,6 +23,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This model class holds the state and manages behavior of the FillTheFormDialog.
@@ -31,7 +33,9 @@ class FillTheFormDialogModel {
 
     public interface FillTheFormDialogModelHelper {
 
-        String getRandomValue(ConfigurationItem configurationItem);
+        boolean isConfigurationVariableKey(String variableKey);
+
+        String getConfigurationVariableValue(String variableKey);
     }
 
     public static final String PROPERTY_EXPAND_ICON = "property_expand_icon";
@@ -44,6 +48,7 @@ class FillTheFormDialogModel {
     public static final String PROPERTY_DIALOG_INITIAL_POSITION = "property_dialog_initial_position";
     public static final String PROPERTY_CONFIGURATION_ITEMS_LIST = "property_configuration_items_list";
     public static final String PROPERTY_CONFIGURATION_ITEM_SELECTED = "property_configuration_item_selected";
+    public static final String PROPERTY_CLEAR_CONFIGURATION_VARIABLES = "property_clear_configuration_variables";
 
     public static final int VIEW_TYPE_SELECTED_ITEM = 1;
     public static final int VIEW_TYPE_NORMAL_ITEM = 2;
@@ -81,6 +86,7 @@ class FillTheFormDialogModel {
     // Configuration items data
     private List<ConfigurationItem> sortedConfigurationItems;
     private ConfigurationItem selectedConfigItem;
+    private String configurationVariablePattern;
 
     public FillTheFormDialogModel(FillTheFormDialogModelHelper helper) {
         this.helper = helper;
@@ -97,12 +103,9 @@ class FillTheFormDialogModel {
     }
 
     public String getSelectedConfigItemValue() {
-        if (selectedConfigItem != null) {
-            String randomValue = helper.getRandomValue(selectedConfigItem);
-            if (randomValue != null) {
-                return randomValue;
-            }
-            return selectedConfigItem.getValue();
+        ConfigurationItem preparedConfigurationItem = prepareSelectedConfigurationItemForInput();
+        if (preparedConfigurationItem != null) {
+            return preparedConfigurationItem.getValue();
         }
         return null;
     }
@@ -156,6 +159,71 @@ class FillTheFormDialogModel {
 
     public List<ConfigurationItem> getSortedConfigurationItems() {
         return sortedConfigurationItems;
+    }
+
+    public int getItemsCount() {
+        return sortedConfigurationItems.size();
+    }
+
+    public ConfigurationItem getConfigurationItem(int position) {
+        ConfigurationItem configurationItem = sortedConfigurationItems.get(position);
+        return prepareConfigurationItemForDialogList(configurationItem);
+    }
+
+    private ConfigurationItem prepareConfigurationItemForDialogList(ConfigurationItem configurationItem) {
+        if (helper != null && configurationItem != null && configurationItem.getValue() == null) {
+            if (configurationVariablePattern != null) {
+                String newConfigurationItemValue = replaceVariableKeysWithValues(configurationItem.getRawValue());
+                configurationItem.setValue(newConfigurationItemValue);
+            } else {
+                configurationItem.setValue(configurationItem.getRawValue());
+            }
+        }
+        return configurationItem;
+    }
+
+    private ConfigurationItem prepareSelectedConfigurationItemForInput() {
+        if (selectedConfigItem != null) {
+            // Check if the selected config item raw value is configuration variable key
+            if (helper != null && helper.isConfigurationVariableKey(selectedConfigItem.getRawValue())) {
+                String configurationVariableValue = helper.getConfigurationVariableValue(selectedConfigItem.getRawValue());
+                if (configurationVariableValue != null) {
+                    ConfigurationItem preparedConfigurationItem = new ConfigurationItem(selectedConfigItem);
+                    preparedConfigurationItem.setValue(configurationVariableValue);
+                    return preparedConfigurationItem;
+                }
+            } else if (selectedConfigItem.getValue() == null) {
+                ConfigurationItem preparedConfigurationItem = new ConfigurationItem(prepareConfigurationItemForDialogList(selectedConfigItem));
+                selectedConfigItem.setValue(null);
+                return preparedConfigurationItem;
+            } else {
+                ConfigurationItem preparedConfigurationItem = new ConfigurationItem(selectedConfigItem);
+                selectedConfigItem.setValue(null);
+                return preparedConfigurationItem;
+            }
+        }
+        return null;
+    }
+
+    private String replaceVariableKeysWithValues(String text) {
+        String newText = text.replace("\\n", "\n");
+        // If entry contains variables then we will replace them with appropriate values
+        Pattern pattern = Pattern.compile(configurationVariablePattern);
+        Matcher m = pattern.matcher(newText);
+        StringBuffer sb = new StringBuffer(newText.length());
+        while (m.find() && m.groupCount() > 0) {
+            String variableKey = m.group(1);
+            String value = helper.getConfigurationVariableValue(variableKey);
+            if (value != null) {
+                m.appendReplacement(sb, Matcher.quoteReplacement(value));
+            }
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
+    public void setConfigurationVariablePattern(String configurationVariablePattern) {
+        this.configurationVariablePattern = configurationVariablePattern;
     }
 
     // Dialog position
@@ -276,6 +344,7 @@ class FillTheFormDialogModel {
     // Show dialog on screen
 
     public void showDialog(List<ConfigurationItem> selectedConfigurationItems) {
+        notifyPropertyChanged(PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
         setSortedConfigurationItems(selectedConfigurationItems);
         if (!isDialogVisible()) {
             setDialogVisible(true);

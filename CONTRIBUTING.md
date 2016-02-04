@@ -45,4 +45,4 @@ We think that these rules are enough to have a consistent look.
 
 ## git-flow
 
-We use the git flow workflow in all our projects and encourage you to do so, too. While this is not necessary to contribute to the project we strongly believe that this worflow makes working with many developers on one project a lot easier. To read more about git flow check out the blog post [A successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/).
+We use the git flow workflow in all our projects and encourage you to do so, too. While this is not necessary to contribute to the project we strongly believe that this workflow makes working with many developers on one project a lot easier. To read more about git flow check out the blog post [A successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/).

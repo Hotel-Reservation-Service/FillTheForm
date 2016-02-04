@@ -19,6 +19,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Xml;
 
 import com.hrs.filltheform.common.ConfigurationItem;
 import com.hrs.filltheform.common.reader.ConfigurationReader;
@@ -39,6 +40,7 @@ import java.io.InputStream;
 public class XmlConfigurationFileReader implements ConfigurationReader {
 
     private static final String TAG = XmlConfigurationFileReader.class.getSimpleName();
+    private static final String CONFIGURATION_VARIABLE_PATTERN = "&(\\w+);";
 
     private ServiceConfiguration configuration;
     private Context appContext;
@@ -56,6 +58,7 @@ public class XmlConfigurationFileReader implements ConfigurationReader {
             InputStream inputStream = getInputStream(source, configurationFileUri);
 
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+            parser.setFeature(Xml.FEATURE_RELAXED, true);
             parser.setInput(inputStream, null);
 
             parseConfigurationFile(parser);
@@ -111,5 +114,10 @@ public class XmlConfigurationFileReader implements ConfigurationReader {
         }
 
         configuration.onReadingCompleted();
+    }
+
+    @Override
+    public String getConfigurationVariablePattern() {
+        return CONFIGURATION_VARIABLE_PATTERN;
     }
 }

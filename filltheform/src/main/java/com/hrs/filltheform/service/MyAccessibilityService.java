@@ -58,6 +58,7 @@ public class MyAccessibilityService extends android.accessibilityservice.Accessi
                 String configurationFileUri = intent.getStringExtra(INTENT_EXTRA_CONFIGURATION_FILE_URI);
                 @ConfigurationReader.ConfigurationSource int configurationFileSource = intent.getIntExtra(INTENT_EXTRA_CONFIGURATION_FILE_SOURCE, ConfigurationReader.SOURCE_ASSETS);
                 configuration.init(getApplicationContext(), configurationFileSource, configurationFileUri);
+                fillTheFormDialog.setConfigurationVariablePattern(configuration.getConfigurationVariablePattern());
             } else if (intent.getAction().equalsIgnoreCase(INTENT_ASK_FOR_LOADED_PACKAGE_NAMES)) {
                 if (configuration != null) {
                     configuration.resendConfigurationData();

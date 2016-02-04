@@ -40,7 +40,7 @@ import android.widget.ImageButton;
 import com.hrs.filltheform.R;
 import com.hrs.filltheform.common.ConfigurationItem;
 import com.hrs.filltheform.common.PropertyChangedListener;
-import com.hrs.filltheform.data.RandomDataGenerator;
+import com.hrs.filltheform.data.ConfigurationVariables;
 
 import java.util.List;
 
@@ -61,6 +61,7 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
     private AccessibilityNodeInfo selectedNodeInfo;
     private int dialogInitialOffset;
     private ConfigurationItemsAdapter configurationItemsAdapter;
+    private ConfigurationVariables configurationVariables;
 
     public FillTheFormDialog(Context context) {
         this.appContext = context.getApplicationContext();
@@ -79,8 +80,8 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
         model.setStatusBarHeight(getStatusBarHeight());
         // Prepare dialog view
         prepareDialogView();
-        // Prepare random generator
-        RandomDataGenerator.init();
+        // Init configuration variables
+        this.configurationVariables = new ConfigurationVariables(context);
     }
 
     public void showDialog(AccessibilityNodeInfo selectedNodeInfo, List<ConfigurationItem> selectedConfigurationItems) {
@@ -89,11 +90,19 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
     }
 
     @Override
-    public String getRandomValue(ConfigurationItem configurationItem) {
-        if (RandomDataGenerator.isRandomKey(configurationItem.getValue())) {
-            return RandomDataGenerator.getRandomContent(configurationItem.getValue());
+    public boolean isConfigurationVariableKey(String variableKey) {
+        return configurationVariables.isConfigurationVariableKey(variableKey);
+    }
+
+    @Override
+    public String getConfigurationVariableValue(String variableKey) {
+        return configurationVariables.getValue(variableKey);
+    }
+
+    public void setConfigurationVariablePattern(String configurationVariablePattern) {
+        if (model != null && configurationVariablePattern != null) {
+            model.setConfigurationVariablePattern(configurationVariablePattern);
         }
-        return null;
     }
 
     private int getStatusBarHeight() {
@@ -261,6 +270,9 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
                 Intent launchIntent = appContext.getPackageManager().getLaunchIntentForPackage(appContext.getPackageName());
                 launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 appContext.startActivity(launchIntent);
+                break;
+            case FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES:
+                configurationVariables.clear();
                 break;
             default:
                 break;

@@ -62,27 +62,29 @@ public class ConfigurationItemsAdapter extends RecyclerView.Adapter<Configuratio
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        ConfigurationItem configurationItem = model.getSortedConfigurationItems().get(position);
+        ConfigurationItem configurationItem = model.getConfigurationItem(position);
 
-        viewHolder.valueTextView.setText(configurationItem.getValue());
+        if (configurationItem != null) {
+            viewHolder.valueTextView.setText(configurationItem.getValue());
 
-        if (configurationItem.getProfile() != null) {
-            viewHolder.profileTextView.setText(configurationItem.getProfile());
-        } else {
-            viewHolder.profileTextView.setText(appContext.getString(R.string.profile_not_found));
-        }
-
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                model.onConfigurationItemClicked(position);
+            if (configurationItem.getProfile() != null) {
+                viewHolder.profileTextView.setText(configurationItem.getProfile());
+            } else {
+                viewHolder.profileTextView.setText(appContext.getString(R.string.profile_not_found));
             }
-        });
+
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    model.onConfigurationItemClicked(position);
+                }
+            });
+        }
     }
 
     @Override
     public int getItemCount() {
-        return model.getSortedConfigurationItems().size();
+        return model.getItemsCount();
     }
 
     @Override

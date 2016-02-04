@@ -1,4 +1,4 @@
-<!--suppress XmlUnboundNsPrefix -->
+<!--suppress ALL -->
 <fillTheFormConfig>
     <packages>
         <package>com.hrs.filltheformsample</package>
@@ -17,6 +17,7 @@
             <phone>+491234879625</phone>
             <zip_code>50667</zip_code>
             <comment>Viele Grüße aus NRW!</comment>
+            <device_model>Ich benutze ein &device_model; von &device_manufacturer;</device_model>
         </profile>
         <profile name="John Doe Profile">
             <first_name>John</first_name>
@@ -30,11 +31,15 @@
             <phone>(415) 321-654</phone>
             <zip_code>CA 94129</zip_code>
             <comment>Welcome to San Francisco!</comment>
+            <device_model>I am using &device_model; from &device_manufacturer;</device_model>
         </profile>
         <profile name="Random Test Profile">
             <first_name>random_first_name</first_name>
+            <first_name>My first name name is &random_first_name;</first_name>
             <last_name>random_last_name</last_name>
+            <last_name>My last name name is &random_last_name;</last_name>
             <email>random_email</email>
+            <email>&random_email_local_part;@xyz.com</email>
             <city>random_city</city>
             <state>random_state</state>
             <country>random_country</country>
@@ -49,4 +54,9 @@
     <last_name>Jukic</last_name>
     <country>Croatia</country>
     <city>Imotski</city>
+    <device_model>&device_manufacturer; &device_model;</device_model>
+    <android_version>API Level &device_android_version;</android_version>
+    <device_ip_address>Device IP is &device_ip_address;</device_ip_address>
+    <android_version>device_android_version</android_version>
+    <device_ip_address>device_ip_address</device_ip_address>
 </fillTheFormConfig>

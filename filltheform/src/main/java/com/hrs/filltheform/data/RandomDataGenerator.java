@@ -23,7 +23,7 @@ import com.thedeanda.lorem.LoremIpsum;
  * These constants indicate which type of random data is needed for which id.
  * The following library is used for generating random content: https://github.com/mdeanda/lorem
  */
-public class RandomDataGenerator {
+class RandomDataGenerator {
 
     private static final String FIRST_NAME = "random_first_name";
     private static final String FIRST_NAME_MALE = "random_first_name_male";
@@ -35,6 +35,7 @@ public class RandomDataGenerator {
     private static final String NAME_FEMALE = "random_name_female";
 
     private static final String EMAIL = "random_email";
+    private static final String EMAIL_LOCAL_PART = "random_email_local_part";
     private static final String CITY = "random_city";
     private static final String COUNTRY = "random_country";
     private static final String PHONE = "random_phone";
@@ -46,16 +47,14 @@ public class RandomDataGenerator {
     private static final String TEXT = "random_text";
     private static final String PARAGRAPH = "random_paragraph";
 
-    private static Lorem lorem;
+    private Lorem lorem;
 
-    public static void init() {
-        if (lorem == null) {
-            lorem = LoremIpsum.getInstance();
-        }
+    public RandomDataGenerator() {
+        this.lorem = LoremIpsum.getInstance();
     }
 
-    public static boolean isRandomKey(String key) {
-        switch (key) {
+    public boolean isRandomVariableKey(String variableKey) {
+        switch (variableKey) {
             case FIRST_NAME:
             case FIRST_NAME_MALE:
             case FIRST_NAME_FEMALE:
@@ -64,6 +63,7 @@ public class RandomDataGenerator {
             case NAME_MALE:
             case NAME_FEMALE:
             case EMAIL:
+            case EMAIL_LOCAL_PART:
             case CITY:
             case COUNTRY:
             case PHONE:
@@ -79,71 +79,47 @@ public class RandomDataGenerator {
         }
     }
 
-    public static String getRandomContent(String key) {
-        if (lorem == null) {
-            lorem = LoremIpsum.getInstance();
-        }
-
-        String randomContent;
-
+    public String getRandomContent(String key) {
         switch (key) {
             case FIRST_NAME:
-                randomContent = lorem.getFirstName();
-                break;
+                return lorem.getFirstName();
             case FIRST_NAME_MALE:
-                randomContent = lorem.getFirstNameMale();
-                break;
+                return lorem.getFirstNameMale();
             case FIRST_NAME_FEMALE:
-                randomContent = lorem.getFirstNameFemale();
-                break;
+                return lorem.getFirstNameFemale();
             case LAST_NAME:
-                randomContent = lorem.getLastName();
-                break;
+                return lorem.getLastName();
             case NAME:
-                randomContent = lorem.getName();
-                break;
+                return lorem.getName();
             case NAME_MALE:
-                randomContent = lorem.getNameMale();
-                break;
+                return lorem.getNameMale();
             case NAME_FEMALE:
-                randomContent = lorem.getNameFemale();
-                break;
+                return lorem.getNameFemale();
             case EMAIL:
-                randomContent = lorem.getEmail();
-                break;
+                return lorem.getEmail();
+            case EMAIL_LOCAL_PART:
+                return lorem.getEmail().replaceAll("@.*", "");
             case CITY:
-                randomContent = lorem.getCity();
-                break;
+                return lorem.getCity();
             case COUNTRY:
-                randomContent = lorem.getCountry();
-                break;
+                return lorem.getCountry();
             case PHONE:
-                randomContent = lorem.getPhone();
-                break;
+                return lorem.getPhone();
             case STATE_ABBREVIATION:
-                randomContent = lorem.getStateAbbr();
-                break;
+                return lorem.getStateAbbr();
             case STATE:
-                randomContent = lorem.getStateFull();
-                break;
+                return lorem.getStateFull();
             case ZIP_CODE:
-                randomContent = lorem.getZipCode();
-                break;
+                return lorem.getZipCode();
             case WORD:
-                randomContent = lorem.getWords(1);
-                break;
+                return lorem.getWords(1);
             case TEXT:
-                randomContent = lorem.getWords(1, 20);
-                break;
+                return lorem.getWords(1, 20);
             case PARAGRAPH:
-                randomContent = lorem.getParagraphs(1, 20);
-                break;
+                return lorem.getParagraphs(1, 20);
             default:
-                randomContent = lorem.getWords(1);
-                break;
+                return null;
         }
-
-        return randomContent;
     }
 
 }
