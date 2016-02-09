@@ -25,7 +25,7 @@ import java.util.List;
  * EventResolverListener is used to receive results from EventResolver.
  */
 public interface EventResolverListener {
-    void onDataForSelectedNodeAvailable(AccessibilityNodeInfo selectedNodeInfo, List<ConfigurationItem> selectedConfigurationItems);
+    void onDataForSelectedNodeAvailable(AccessibilityNodeInfo selectedNodeInfo, int accessibilityEventType, List<ConfigurationItem> selectedConfigurationItems);
 
     void onDataForSelectedNodeNotAvailable(AccessibilityNodeInfo selectedNodeInfo);
 }

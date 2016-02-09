@@ -13,10 +13,16 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
-    android:accessibilityEventTypes="typeViewLongClicked|typeViewClicked|typeViewFocused"
-    android:accessibilityFlags="flagDefault|flagIncludeNotImportantViews|flagRetrieveInteractiveWindows|flagReportViewIds"
-    android:canRetrieveWindowContent="true"
-    android:accessibilityFeedbackType="feedbackGeneric"
-    android:notificationTimeout="100"
-    android:description="@string/service_description"/>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@android:color/white" />
+        </shape>
+    </item>
+    <item
+        android:bottom="@dimen/expand_icon_fast_mode_padding"
+        android:drawable="@drawable/ic_fast_mode"
+        android:left="@dimen/expand_icon_fast_mode_padding"
+        android:right="@dimen/expand_icon_fast_mode_padding"
+        android:top="@dimen/expand_icon_fast_mode_padding" />
+</layer-list>

@@ -39,6 +39,7 @@ class FillTheFormDialogModel {
     }
 
     public static final String PROPERTY_EXPAND_ICON = "property_expand_icon";
+    public static final String PROPERTY_EXPAND_ICON_FAST_MODE = "property_expand_icon_fast_mode";
     public static final String PROPERTY_CLOSE_BUTTON = "property_close_button";
     public static final String PROPERTY_OPEN_FILL_THE_FORM_APP_BUTTON = "property_open_fill_the_form_app_button";
     public static final String PROPERTY_MINIMIZE_BUTTON = "property_minimize_button";
@@ -49,6 +50,13 @@ class FillTheFormDialogModel {
     public static final String PROPERTY_CONFIGURATION_ITEMS_LIST = "property_configuration_items_list";
     public static final String PROPERTY_CONFIGURATION_ITEM_SELECTED = "property_configuration_item_selected";
     public static final String PROPERTY_CLEAR_CONFIGURATION_VARIABLES = "property_clear_configuration_variables";
+    public static final String PROPERTY_FAST_MODE = "property_fast_mode";
+    public static final String PROPERTY_FAST_MODE_BUTTON = "property_fast_mode_button";
+
+    public static final int EVENT_TYPE_UNKNOWN = 0;
+    public static final int EVENT_TYPE_VIEW_LONG_CLICKED = 2;
+    public static final int EVENT_TYPE_VIEW_CLICKED = 1;
+    public static final int EVENT_TYPE_VIEW_FOCUSED = 8;
 
     public static final int VIEW_TYPE_SELECTED_ITEM = 1;
     public static final int VIEW_TYPE_NORMAL_ITEM = 2;
@@ -56,7 +64,7 @@ class FillTheFormDialogModel {
     private static final int MAX_CLICK_DURATION = 200;
 
     private PropertyChangedListener propertyChangedListener;
-    private FillTheFormDialogModelHelper helper;
+    private final FillTheFormDialogModelHelper helper;
 
     // Visibility and expanded status
     private boolean expandIconVisible = true;
@@ -87,6 +95,9 @@ class FillTheFormDialogModel {
     private List<ConfigurationItem> sortedConfigurationItems;
     private ConfigurationItem selectedConfigItem;
     private String configurationVariablePattern;
+
+    // Fast mode
+    private boolean fastModeEnabled;
 
     public FillTheFormDialogModel(FillTheFormDialogModelHelper helper) {
         this.helper = helper;
@@ -343,16 +354,23 @@ class FillTheFormDialogModel {
 
     // Show dialog on screen
 
-    public void showDialog(List<ConfigurationItem> selectedConfigurationItems) {
+    public void showDialog(int modelEventType, List<ConfigurationItem> selectedConfigurationItems) {
+        if (isDialogVisible() && isFastModeEnabled() && modelEventType == EVENT_TYPE_VIEW_LONG_CLICKED) {
+            return;
+        } else if (!isDialogVisible() && (modelEventType == EVENT_TYPE_VIEW_CLICKED || modelEventType == EVENT_TYPE_VIEW_FOCUSED)) {
+            return;
+        }
         notifyPropertyChanged(PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
         setSortedConfigurationItems(selectedConfigurationItems);
         if (!isDialogVisible()) {
+            setExpandIconVisible(true);
             setDialogVisible(true);
+            notifyPropertyChanged(PROPERTY_DIALOG_INITIAL_POSITION);
         }
-        notifyPropertyChanged(PROPERTY_DIALOG_INITIAL_POSITION);
-        notifyPropertyChanged(PROPERTY_EXPAND_ICON);
         notifyPropertyChanged(PROPERTY_CONFIGURATION_ITEMS_LIST);
-        setSelectedConfigItem(sortedConfigurationItems.get(0));
+        if (isFastModeEnabled() || modelEventType == EVENT_TYPE_VIEW_LONG_CLICKED) {
+            setSelectedConfigItem(sortedConfigurationItems.get(0));
+        }
     }
 
     // Dialog visibility
@@ -409,6 +427,26 @@ class FillTheFormDialogModel {
     private void setExpandIconVisible(boolean expandIconVisible) {
         this.expandIconVisible = expandIconVisible;
         notifyPropertyChanged(PROPERTY_EXPAND_ICON);
+        notifyPropertyChanged(PROPERTY_EXPAND_ICON_FAST_MODE);
+    }
+
+    // Fast mode
+
+    public void toggleFastMode() {
+        setFastModeEnabled(!fastModeEnabled);
+    }
+
+    public void setFastModeEnabled(boolean enabled) {
+        boolean saveFastModeToSharedPrefs = fastModeEnabled != enabled;
+        this.fastModeEnabled = enabled;
+        if (saveFastModeToSharedPrefs) {
+            notifyPropertyChanged(PROPERTY_FAST_MODE);
+        }
+        notifyPropertyChanged(PROPERTY_FAST_MODE_BUTTON);
+    }
+
+    public boolean isFastModeEnabled() {
+        return fastModeEnabled;
     }
 
     // Property changes

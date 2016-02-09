@@ -130,7 +130,7 @@ public class FillTheFormDialogModelTest {
         List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
         assertTrue(model.isDialogVisible());
@@ -153,10 +153,10 @@ public class FillTheFormDialogModelTest {
     public void testShowDialogWhenSelectedConfigItemIsNotNull() throws Exception {
         // prepare
         List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
         assertTrue(model.isDialogVisible());
@@ -168,8 +168,9 @@ public class FillTheFormDialogModelTest {
         assertEquals(selectedConfigurationItems.get(0).getValue(), model.getSelectedConfigItemValue());
         verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
         verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
-        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
-        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON_FAST_MODE);
         verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
     }
 
@@ -177,12 +178,12 @@ public class FillTheFormDialogModelTest {
     public void testShowDialogWhenSelectedConfigItemIsNotTheFirstItemFromTheList() throws Exception {
         // prepare
         List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
-        model.showDialog(selectedConfigurationItems);
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
         model.onConfigurationItemClicked(3);
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
         assertTrue(model.isDialogVisible());
@@ -194,8 +195,9 @@ public class FillTheFormDialogModelTest {
         assertEquals("Max", model.getSelectedConfigItemValue());
         verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
         verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
-        verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
-        verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON_FAST_MODE);
         verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
     }
 
@@ -203,13 +205,13 @@ public class FillTheFormDialogModelTest {
     public void testShowDialogShouldKeepTheLastSelectedItemOnTop() throws Exception {
         // prepare
         List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
-        model.showDialog(selectedConfigurationItems);
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
         model.onConfigurationItemClicked(3);
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
         assertTrue(model.isDialogVisible());
@@ -221,8 +223,9 @@ public class FillTheFormDialogModelTest {
         assertEquals("Max", model.getSelectedConfigItemValue());
         verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
         verify(propertyChangedListener, times(5)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
-        verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
-        verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON_FAST_MODE);
         verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
     }
 
@@ -233,7 +236,7 @@ public class FillTheFormDialogModelTest {
         model.setConfigurationVariablePattern(null);
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
         assertTrue(model.isDialogVisible());
@@ -259,7 +262,7 @@ public class FillTheFormDialogModelTest {
         model.setConfigurationVariablePattern("");
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
         assertTrue(model.isDialogVisible());
@@ -292,7 +295,7 @@ public class FillTheFormDialogModelTest {
     public void testOnConfigurationItemClickedWhenSelectedConfigItemIsNotNull() throws Exception {
         // prepare
         List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // run
         model.onConfigurationItemClicked(2);
@@ -315,7 +318,7 @@ public class FillTheFormDialogModelTest {
     public void testGetSelectedConfigItemValueShouldReturnValue() throws Exception {
         // prepare
         List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // run
         String value = model.getSelectedConfigItemValue();
@@ -331,7 +334,7 @@ public class FillTheFormDialogModelTest {
         selectedConfigurationItems.add(new ConfigurationItem("first_name", "myprofile", "random_first_name"));
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
         String value = model.getSelectedConfigItemValue();
 
         // verify
@@ -345,7 +348,7 @@ public class FillTheFormDialogModelTest {
         selectedConfigurationItems.add(new ConfigurationItem("last_name", "myprofile", "random_last_name"));
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
         String value = model.getSelectedConfigItemValue();
 
         // verify
@@ -369,7 +372,7 @@ public class FillTheFormDialogModelTest {
         selectedConfigurationItems.add(new ConfigurationItem("last_name", "myprofile", "random_last_name"));
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
         int viewType = model.getSortedConfigItemType(1);
 
         // verify
@@ -384,7 +387,7 @@ public class FillTheFormDialogModelTest {
         selectedConfigurationItems.add(new ConfigurationItem("last_name", "myprofile", "random_last_name"));
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
         int viewType = model.getSortedConfigItemType(0);
 
         // verify
@@ -397,7 +400,7 @@ public class FillTheFormDialogModelTest {
         List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
         assertEquals(selectedConfigurationItems, model.getSortedConfigurationItems());
@@ -410,21 +413,21 @@ public class FillTheFormDialogModelTest {
         selectedConfigurationItems.add(new ConfigurationItem("first_name", "myprofile", "&random_first_name;"));
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
         String editTextContent = model.getSelectedConfigItemValue();
         assertEquals("Luke", editTextContent);
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
         editTextContent = model.getSelectedConfigItemValue();
         assertEquals("Peter", editTextContent);
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
         editTextContent = model.getSelectedConfigItemValue();
@@ -438,7 +441,7 @@ public class FillTheFormDialogModelTest {
         selectedConfigurationItems.add(new ConfigurationItem("first_name", "myprofile", "random_first_name"));
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
         model.getConfigurationItem(0);
 
         // verify
@@ -473,7 +476,7 @@ public class FillTheFormDialogModelTest {
         selectedConfigurationItems.add(new ConfigurationItem("user_description", "myprofile", "&random_first_name; has &device_model;"));
 
         // run
-        model.showDialog(selectedConfigurationItems);
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
         model.getConfigurationItem(0);
 
         // verify
@@ -499,6 +502,202 @@ public class FillTheFormDialogModelTest {
         assertEquals("Luke has Nexus 42", editTextContent);
         dialogListSelectedItem = model.getConfigurationItem(0).getValue();
         assertEquals("Peter has Nexus 9", dialogListSelectedItem);
+    }
+
+    @Test
+    public void testToggleFastMode() throws Exception {
+        // prepare
+        model.setFastModeEnabled(true);
+
+        // run
+        model.toggleFastMode();
+
+        // verify
+        assertFalse(model.isFastModeEnabled());
+    }
+
+    @Test
+    public void testSetFastModeEnabled() throws Exception {
+        // run
+        model.setFastModeEnabled(true);
+
+        // verify
+        assertTrue(model.isFastModeEnabled());
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_FAST_MODE);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_FAST_MODE_BUTTON);
+
+        // run
+        model.setFastModeEnabled(true);
+
+        // verify
+        assertTrue(model.isFastModeEnabled());
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_FAST_MODE);
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_FAST_MODE_BUTTON);
+
+        // run
+        model.setFastModeEnabled(false);
+
+        // verify
+        assertFalse(model.isFastModeEnabled());
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_FAST_MODE);
+        verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_FAST_MODE_BUTTON);
+    }
+
+    @Test
+    public void testClickAndFocusedEventsShouldBeIgnoredWhenDialogIsNotVisible() throws Exception {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_CLICKED, selectedConfigurationItems);
+
+        // verify
+        assertFalse(model.isDialogVisible());
+        assertFalse(model.isDialogExpanded());
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON_FAST_MODE);
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_VISIBILITY);
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_FOCUSED, selectedConfigurationItems);
+
+        // verify
+        assertFalse(model.isDialogVisible());
+        assertFalse(model.isDialogExpanded());
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON_FAST_MODE);
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_VISIBILITY);
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
+    }
+
+    @Test
+    public void testLongClickShouldBeIgnoredWhenDialogIsVisibleAndInFastMode() throws Exception {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
+
+        // verify
+        assertTrue(model.isDialogVisible());
+        assertFalse(model.isDialogExpanded());
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON_FAST_MODE);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_VISIBILITY);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
+
+        // prepare
+        model.setFastModeEnabled(true);
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
+
+        // verify
+        assertTrue(model.isDialogVisible());
+        assertFalse(model.isDialogExpanded());
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON_FAST_MODE);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_VISIBILITY);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
+    }
+
+    @Test
+    public void testItemShouldBeSelectedTwiceAfterTwoLongClicksInNormalMode() throws Exception {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
+
+        // verify
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
+
+        // verify
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
+    }
+
+    @Test
+    public void testItemShouldBeSelectedOnceAfterTwoLongClicksInFastMode() throws Exception {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        model.setFastModeEnabled(true);
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
+
+        // verify
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
+
+        // verify
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
+    }
+
+    @Test
+    public void testItemShouldBeSelectedOnceAfterLongClickThenFocusChangeAndClickInNormalMode() throws Exception {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
+
+        // verify
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_CLICKED, selectedConfigurationItems);
+
+        // verify
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_FOCUSED, selectedConfigurationItems);
+
+        // verify
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
+    }
+
+    @Test
+    public void testItemShouldBeSelectedThreeTimesAfterLongClickThenFocusChangeAndClickInFastMode() throws Exception {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        model.setFastModeEnabled(true);
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
+
+        // verify
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_CLICKED, selectedConfigurationItems);
+
+        // verify
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_FOCUSED, selectedConfigurationItems);
+
+        // verify
+        verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED);
     }
 
     // Dialog position

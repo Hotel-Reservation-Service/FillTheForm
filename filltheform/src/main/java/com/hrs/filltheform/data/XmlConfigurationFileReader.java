@@ -42,8 +42,8 @@ public class XmlConfigurationFileReader implements ConfigurationReader {
     private static final String TAG = XmlConfigurationFileReader.class.getSimpleName();
     private static final String CONFIGURATION_VARIABLE_PATTERN = "&(\\w+);";
 
-    private ServiceConfiguration configuration;
-    private Context appContext;
+    private final ServiceConfiguration configuration;
+    private final Context appContext;
 
     public XmlConfigurationFileReader(Context context, ServiceConfiguration configuration) {
         this.appContext = context;

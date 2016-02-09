@@ -38,8 +38,8 @@ public class ServiceConfiguration implements ConfigurationReaderListener {
         void onConfigurationFailed(String errorMessage);
     }
 
-    private List<String> packageNames = new ArrayList<>();
-    private SimpleArrayMap<String, List<ConfigurationItem>> idGroups = new SimpleArrayMap<>();
+    private final List<String> packageNames = new ArrayList<>();
+    private final SimpleArrayMap<String, List<ConfigurationItem>> idGroups = new SimpleArrayMap<>();
 
     private ServiceConfigurationListener serviceConfigurationListener;
     private ConfigurationReader configurationReader;

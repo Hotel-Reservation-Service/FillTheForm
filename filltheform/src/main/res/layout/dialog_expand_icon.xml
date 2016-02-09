@@ -14,26 +14,26 @@
      limitations under the License.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/dialog"
-    android:layout_width="@dimen/normal_dialog_width"
-    android:layout_height="@dimen/normal_dialog_height">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/expand_icon"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/dialog_expand_icon_padding"
+    tools:showIn="@layout/dialog">
 
-    <android.support.v7.widget.CardView
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/dialog_card_margin"
-        android:orientation="vertical">
+        android:contentDescription="@string/dialog_expand"
+        android:scaleType="fitXY"
+        android:src="@android:drawable/ic_menu_more" />
 
-        <include
-            layout="@layout/dialog_expand_icon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <include
-            layout="@layout/dialog_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
-
-    </android.support.v7.widget.CardView>
+    <ImageView
+        android:id="@+id/expand_icon_fast_mode"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/dialog_expand"
+        android:padding="@dimen/dialog_expand_icon_fast_mode_padding"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_expand_icon_fast_mode" />
 </FrameLayout>
