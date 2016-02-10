@@ -48,10 +48,11 @@ class FillTheFormDialogModel {
     public static final String PROPERTY_DIALOG_POSITION = "property_dialog_position";
     public static final String PROPERTY_DIALOG_INITIAL_POSITION = "property_dialog_initial_position";
     public static final String PROPERTY_CONFIGURATION_ITEMS_LIST = "property_configuration_items_list";
-    public static final String PROPERTY_CONFIGURATION_ITEM_SELECTED = "property_configuration_item_selected";
     public static final String PROPERTY_CLEAR_CONFIGURATION_VARIABLES = "property_clear_configuration_variables";
     public static final String PROPERTY_FAST_MODE = "property_fast_mode";
     public static final String PROPERTY_FAST_MODE_BUTTON = "property_fast_mode_button";
+    public static final String PROPERTY_ACTION_SET_TEXT = "property_action_set_text";
+    public static final String PROPERTY_ACTION_PASTE = "property_action_paste";
 
     public static final int EVENT_TYPE_UNKNOWN = 0;
     public static final int EVENT_TYPE_VIEW_LONG_CLICKED = 2;
@@ -106,11 +107,13 @@ class FillTheFormDialogModel {
     // Select configuration item
 
     public void onConfigurationItemClicked(int position) {
-        if (sortedConfigurationItems != null) {
-            setSelectedConfigItem(sortedConfigurationItems.get(position));
-        } else {
-            setSelectedConfigItem(null);
-        }
+        setSelectedConfigItem(position);
+        notifyPropertyChanged(PROPERTY_ACTION_SET_TEXT);
+    }
+
+    public void onConfigurationItemLongClicked(int position) {
+        setSelectedConfigItem(position);
+        notifyPropertyChanged(PROPERTY_ACTION_PASTE);
     }
 
     public String getSelectedConfigItemValue() {
@@ -121,17 +124,16 @@ class FillTheFormDialogModel {
         return null;
     }
 
-    public int getSortedConfigItemType(int position) {
-        if (sortedConfigurationItems != null && position == sortedConfigurationItems.indexOf(selectedConfigItem)) {
-            return VIEW_TYPE_SELECTED_ITEM;
+    private void setSelectedConfigItem(int position) {
+        if (sortedConfigurationItems != null) {
+            setSelectedConfigItem(sortedConfigurationItems.get(position));
         } else {
-            return VIEW_TYPE_NORMAL_ITEM;
+            setSelectedConfigItem(null);
         }
     }
 
     private void setSelectedConfigItem(ConfigurationItem selectedConfigItem) {
         this.selectedConfigItem = selectedConfigItem;
-        notifyPropertyChanged(PROPERTY_CONFIGURATION_ITEM_SELECTED);
     }
 
     // Configuration items data
@@ -174,6 +176,14 @@ class FillTheFormDialogModel {
 
     public int getItemsCount() {
         return sortedConfigurationItems.size();
+    }
+
+    public int getSortedConfigItemType(int position) {
+        if (sortedConfigurationItems != null && position == sortedConfigurationItems.indexOf(selectedConfigItem)) {
+            return VIEW_TYPE_SELECTED_ITEM;
+        } else {
+            return VIEW_TYPE_NORMAL_ITEM;
+        }
     }
 
     public ConfigurationItem getConfigurationItem(int position) {
@@ -370,6 +380,7 @@ class FillTheFormDialogModel {
         notifyPropertyChanged(PROPERTY_CONFIGURATION_ITEMS_LIST);
         if (isFastModeEnabled() || modelEventType == EVENT_TYPE_VIEW_LONG_CLICKED) {
             setSelectedConfigItem(sortedConfigurationItems.get(0));
+            notifyPropertyChanged(PROPERTY_ACTION_SET_TEXT);
         }
     }
 
