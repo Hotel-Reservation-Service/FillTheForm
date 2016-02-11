@@ -79,6 +79,14 @@ public class ConfigurationItemsAdapter extends RecyclerView.Adapter<Configuratio
                     model.onConfigurationItemClicked(position);
                 }
             });
+
+            viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    model.onConfigurationItemLongClicked(position);
+                    return true;
+                }
+            });
         }
     }
 

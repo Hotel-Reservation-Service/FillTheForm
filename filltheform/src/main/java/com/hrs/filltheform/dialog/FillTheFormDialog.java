@@ -228,13 +228,22 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
         arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, inputData);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            ClipboardManager clipboard = (ClipboardManager) appContext.getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText(inputData, inputData);
-            clipboard.setPrimaryClip(clip);
+            copyToClipboard(inputData);
             selectedNodeInfo.performAction(AccessibilityNodeInfo.ACTION_PASTE);
         } else {
             selectedNodeInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
         }
+    }
+
+    private void pasteTheData(String inputData) {
+        copyToClipboard(inputData);
+        selectedNodeInfo.performAction(AccessibilityNodeInfo.ACTION_PASTE);
+    }
+
+    private void copyToClipboard(String inputData) {
+        ClipboardManager clipboard = (ClipboardManager) appContext.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(inputData, inputData);
+        clipboard.setPrimaryClip(clip);
     }
 
     // FillTheFormDialogModelHelper methods
@@ -293,8 +302,12 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
                 configurationItemsAdapter.notifyDataSetChanged();
                 configurationItemsView.scrollToPosition(0);
                 break;
-            case FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEM_SELECTED:
+            case FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT:
                 fillTheSelectedNodeWithData(model.getSelectedConfigItemValue());
+                configurationItemsAdapter.notifyDataSetChanged();
+                break;
+            case FillTheFormDialogModel.PROPERTY_ACTION_PASTE:
+                pasteTheData(model.getSelectedConfigItemValue());
                 configurationItemsAdapter.notifyDataSetChanged();
                 break;
             case FillTheFormDialogModel.PROPERTY_DIALOG_EXPANDED:
