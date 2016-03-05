@@ -48,13 +48,13 @@ public class ServiceConfiguration implements ConfigurationReaderListener {
         this.serviceConfigurationListener = serviceConfigurationListener;
     }
 
-    public void init(Context context, @ConfigurationReader.ConfigurationSource int source, @NonNull String configurationFileUri) {
+    public void init(Context context, @ConfigurationReader.ConfigurationSource int source, @NonNull String configurationFilePath) {
         packageNames.clear();
         idGroups.clear();
         if (configurationReader == null) {
             configurationReader = new XmlConfigurationFileReader(context, this);
         }
-        configurationReader.readConfigurationFile(source, configurationFileUri);
+        configurationReader.readConfigurationFile(source, configurationFilePath);
     }
 
     public void addPackage(String packageName) {

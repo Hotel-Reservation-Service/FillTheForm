@@ -44,7 +44,7 @@ public class MyAccessibilityService extends android.accessibilityservice.Accessi
     private static final String TAG = MyAccessibilityService.class.getSimpleName();
 
     public static final String INTENT_READ_CONFIGURATION_FILE = "com.hrs.filltheform.INTENT_READ_CONFIGURATION_FILE";
-    public static final String INTENT_EXTRA_CONFIGURATION_FILE_URI = "com.hrs.filltheform.INTENT_EXTRA_CONFIGURATION_FILE_URI";
+    public static final String INTENT_EXTRA_CONFIGURATION_FILE_PATH = "com.hrs.filltheform.INTENT_EXTRA_CONFIGURATION_FILE_PATH";
     public static final String INTENT_EXTRA_CONFIGURATION_FILE_SOURCE = "com.hrs.filltheform.INTENT_EXTRA_CONFIGURATION_FILE_SOURCE";
     public static final String INTENT_ASK_FOR_LOADED_PACKAGE_NAMES = "com.hrs.filltheform.INTENT_ASK_FOR_LOADED_PACKAGE_NAMES";
     public static final String INTENT_SEND_LOADED_PACKAGE_NAMES = "com.hrs.filltheform.INTENT_SEND_LOADED_PACKAGE_NAMES";
@@ -58,9 +58,9 @@ public class MyAccessibilityService extends android.accessibilityservice.Accessi
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equalsIgnoreCase(INTENT_READ_CONFIGURATION_FILE)) {
-                String configurationFileUri = intent.getStringExtra(INTENT_EXTRA_CONFIGURATION_FILE_URI);
+                String configurationFilePath = intent.getStringExtra(INTENT_EXTRA_CONFIGURATION_FILE_PATH);
                 @ConfigurationReader.ConfigurationSource int configurationFileSource = intent.getIntExtra(INTENT_EXTRA_CONFIGURATION_FILE_SOURCE, ConfigurationReader.SOURCE_ASSETS);
-                configuration.init(getApplicationContext(), configurationFileSource, configurationFileUri);
+                configuration.init(getApplicationContext(), configurationFileSource, configurationFilePath);
                 fillTheFormDialog.setConfigurationVariablePattern(configuration.getConfigurationVariablePattern());
             } else if (intent.getAction().equalsIgnoreCase(INTENT_ASK_FOR_LOADED_PACKAGE_NAMES)) {
                 if (configuration != null) {

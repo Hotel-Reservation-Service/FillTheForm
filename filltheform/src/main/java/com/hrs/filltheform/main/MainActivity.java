@@ -20,12 +20,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
-import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -53,10 +53,11 @@ public class MainActivity extends AppCompatActivity implements PropertyChangedLi
 
     public static final String MY_SHARED_PREFERENCES = "FillTheFormPreferences";
     private static final int SYSTEM_ALERT_WINDOW_REQUEST_CODE = 123;
+    private static final int READ_EXTERNAL_STORAGE_REQUEST_CODE = 124;
     private static final int FILE_OPEN_REQUEST_CODE = 125;
 
     private static final String MODEL_KEY = "model_key";
-    private static final String CONFIGURATION_FILE_URI_KEY = "configuration_file_uri_key";
+    private static final String CONFIGURATION_FILE_PATH_KEY = "configuration_file_path_key";
     private static final String CONFIGURATION_FILE_NAME_KEY = "configuration_file_name_key";
 
     private MainActivityModel model;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements PropertyChangedLi
     private View loadedPackageNamesEmpty;
     private TextView configurationFileName;
     private View accessibilityServiceContainer;
+    private View readExternalStorageContainer;
     private LinearLayout loadedPackageNamesContainer;
     private LinearLayout loadedPackageNamesList;
 
@@ -119,6 +121,14 @@ public class MainActivity extends AppCompatActivity implements PropertyChangedLi
                 model.onEnableAccessibilityServiceButtonClicked();
             }
         });
+        readExternalStorageContainer = findViewById(R.id.read_external_storage_container);
+        Button readExternalStorageButton = (Button) findViewById(R.id.read_external_storage_button);
+        readExternalStorageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                model.onEnableReadExternalStorageButtonClicked();
+            }
+        });
         loadConfigurationFileContainer = findViewById(R.id.load_configuration_file_container);
         Button loadConfigurationFileButton = (Button) findViewById(R.id.load_configuration_file_button);
         loadConfigurationFileButton.setOnClickListener(new View.OnClickListener() {
@@ -156,10 +166,12 @@ public class MainActivity extends AppCompatActivity implements PropertyChangedLi
 
     private void checkPermissions() {
         boolean systemAlertWindowPermissionEnabled = PermissionsManager.isSystemAlertWindowPermissionEnabled(this);
+        boolean readExternalStoragePermissionEnabled = PermissionsManager.isReadExternalStoragePermissionEnabled(this);
         boolean accessibilityServiceEnabled = PermissionsManager.isAccessibilityServiceEnabled(this, ACCESSIBILITY_SERVICE);
         // Set up the model
         model.setSystemAlertWindowPermissionEnabled(systemAlertWindowPermissionEnabled);
         model.setAccessibilityServiceEnabled(accessibilityServiceEnabled);
+        model.setReadExternalStorageEnabled(readExternalStoragePermissionEnabled);
         model.checkIfLoadingOfConfigurationFileIsAllowed();
     }
 
@@ -205,13 +217,21 @@ public class MainActivity extends AppCompatActivity implements PropertyChangedLi
     // Handle permissions
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == READ_EXTERNAL_STORAGE_REQUEST_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                model.setReadExternalStorageEnabled(true);
+            } else {
+                model.setReadExternalStorageEnabled(false);
+            }
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == SYSTEM_ALERT_WINDOW_REQUEST_CODE) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                model.setSystemAlertWindowPermissionEnabled(Settings.canDrawOverlays(this));
-            } else {
-                model.setSystemAlertWindowPermissionEnabled(true);
-            }
+            model.setSystemAlertWindowPermissionEnabled(PermissionsManager.isSystemAlertWindowPermissionEnabled(this));
         } else if (requestCode == FILE_OPEN_REQUEST_CODE && resultCode == RESULT_OK) {
             Uri configurationFileUri;
             if (data != null) {
@@ -258,6 +278,16 @@ public class MainActivity extends AppCompatActivity implements PropertyChangedLi
             case MainActivityModel.PROPERTY_SYSTEM_ALERT_WINDOW_PERMISSION:
                 PermissionsManager.askForSystemAlertWindowPermission(this, SYSTEM_ALERT_WINDOW_REQUEST_CODE);
                 break;
+            case MainActivityModel.PROPERTY_READ_EXTERNAL_STORAGE_CONTAINER:
+                if (model.isReadExternalStorageContainerVisible()) {
+                    readExternalStorageContainer.setVisibility(View.VISIBLE);
+                } else {
+                    readExternalStorageContainer.setVisibility(View.GONE);
+                }
+                break;
+            case MainActivityModel.PROPERTY_READ_EXTERNAL_STORAGE_PERMISSION:
+                PermissionsManager.askForReadExternalStoragePermission(this, READ_EXTERNAL_STORAGE_REQUEST_CODE);
+                break;
             case MainActivityModel.PROPERTY_ACCESSIBILITY_SERVICE_CONTAINER:
                 if (model.isAccessibilityServiceContainerVisible()) {
                     accessibilityServiceContainer.setVisibility(View.VISIBLE);
@@ -283,12 +313,12 @@ public class MainActivity extends AppCompatActivity implements PropertyChangedLi
                 break;
             case MainActivityModel.PROPERTY_LOAD_CONFIGURATION_FILE_BUTTON:
                 Intent intent = new Intent(MyAccessibilityService.INTENT_READ_CONFIGURATION_FILE);
-                String uri = model.getConfigurationFileUri();
-                if (TextUtils.isEmpty(uri)) {
-                    intent.putExtra(MyAccessibilityService.INTENT_EXTRA_CONFIGURATION_FILE_URI, model.getConfigurationFileName());
+                String configurationFilePath = model.getConfigurationFilePath();
+                if (TextUtils.isEmpty(configurationFilePath)) {
+                    intent.putExtra(MyAccessibilityService.INTENT_EXTRA_CONFIGURATION_FILE_PATH, model.getConfigurationFileName());
                     intent.putExtra(MyAccessibilityService.INTENT_EXTRA_CONFIGURATION_FILE_SOURCE, ConfigurationReader.SOURCE_ASSETS);
                 } else {
-                    intent.putExtra(MyAccessibilityService.INTENT_EXTRA_CONFIGURATION_FILE_URI, model.getConfigurationFileUri());
+                    intent.putExtra(MyAccessibilityService.INTENT_EXTRA_CONFIGURATION_FILE_PATH, configurationFilePath);
                     intent.putExtra(MyAccessibilityService.INTENT_EXTRA_CONFIGURATION_FILE_SOURCE, ConfigurationReader.SOURCE_OTHER);
                 }
                 sendBroadcast(intent);
@@ -363,17 +393,17 @@ public class MainActivity extends AppCompatActivity implements PropertyChangedLi
 
     private void storeConfigurationFileAttributesInSharedPreferences() {
         SharedPreferences.Editor editor = getSharedPreferences(MY_SHARED_PREFERENCES, MODE_PRIVATE).edit();
-        editor.putString(CONFIGURATION_FILE_URI_KEY, model.getConfigurationFileUri());
+        editor.putString(CONFIGURATION_FILE_PATH_KEY, model.getConfigurationFilePath());
         editor.putString(CONFIGURATION_FILE_NAME_KEY, model.getConfigurationFileName());
         editor.apply();
     }
 
     private void readConfigurationFileAttributesFromSharedPreferences() {
         SharedPreferences prefs = getSharedPreferences(MY_SHARED_PREFERENCES, MODE_PRIVATE);
-        String configurationFileUri = prefs.getString(CONFIGURATION_FILE_URI_KEY, null);
+        String configurationFilePath = prefs.getString(CONFIGURATION_FILE_PATH_KEY, null);
         String configurationFileName = prefs.getString(CONFIGURATION_FILE_NAME_KEY, null);
-        if (configurationFileUri != null) {
-            model.setConfigurationFileAttributes(configurationFileUri, configurationFileName);
+        if (configurationFilePath != null) {
+            model.setConfigurationFileAttributes(configurationFilePath, configurationFileName);
         } else {
             model.setConfigurationFileAttributes(null, SAMPLE_APP_CONFIG_FILE_NAME);
         }

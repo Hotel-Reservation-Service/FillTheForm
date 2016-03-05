@@ -31,6 +31,8 @@ public class MainActivityModel implements Parcelable {
 
     public static final String PROPERTY_SYSTEM_ALERT_WINDOW_CONTAINER = "property_system_alert_window_container";
     public static final String PROPERTY_SYSTEM_ALERT_WINDOW_PERMISSION = "property_system_alert_window_permission";
+    public static final String PROPERTY_READ_EXTERNAL_STORAGE_CONTAINER = "property_read_external_storage_container";
+    public static final String PROPERTY_READ_EXTERNAL_STORAGE_PERMISSION = "property_read_external_storage_permission";
 
     public static final String PROPERTY_LOAD_CONFIGURATION_FILE_CONTAINER = "property_load_configuration_file_container";
     public static final String PROPERTY_LOAD_CONFIGURATION_FILE_BUTTON = "property_load_configuration_file_button";
@@ -50,9 +52,10 @@ public class MainActivityModel implements Parcelable {
 
     private boolean permissionsHeaderVisible = true;
     private boolean systemAlertWindowContainerVisible = true;
+    private boolean readExternalStorageContainerVisible = true;
     private boolean accessibilityServiceContainerVisible = true;
     private boolean loadConfigurationFileContainerVisible = false;
-    private String configurationFileUri;
+    private String configurationFilePath;
     private String configurationFileName;
     private boolean loadedPackageNamesContainerVisible = false;
     private boolean loadedPackageNamesEmptyVisible = false;
@@ -80,10 +83,18 @@ public class MainActivityModel implements Parcelable {
         notifyPropertyChanged(PROPERTY_SYSTEM_ALERT_WINDOW_PERMISSION);
     }
 
+    public void onEnableReadExternalStorageButtonClicked() {
+        notifyPropertyChanged(PROPERTY_READ_EXTERNAL_STORAGE_PERMISSION);
+    }
+
     // Permissions enable/disable
 
     public void setSystemAlertWindowPermissionEnabled(boolean enabled) {
         setSystemAlertWindowContainerVisible(!enabled);
+    }
+
+    public void setReadExternalStorageEnabled(boolean enabled) {
+        setReadExternalStorageContainerVisible(!enabled);
     }
 
     // Permission view containers
@@ -97,11 +108,20 @@ public class MainActivityModel implements Parcelable {
         notifyPropertyChanged(PROPERTY_SYSTEM_ALERT_WINDOW_CONTAINER);
     }
 
+    public boolean isReadExternalStorageContainerVisible() {
+        return readExternalStorageContainerVisible;
+    }
+
+    private void setReadExternalStorageContainerVisible(boolean readExternalStorageContainerVisible) {
+        this.readExternalStorageContainerVisible = readExternalStorageContainerVisible;
+        notifyPropertyChanged(PROPERTY_READ_EXTERNAL_STORAGE_CONTAINER);
+    }
+
     // Load configuration file
 
     public void checkIfLoadingOfConfigurationFileIsAllowed() {
         boolean allowed;
-        allowed = !(systemAlertWindowContainerVisible || accessibilityServiceContainerVisible);
+        allowed = !(systemAlertWindowContainerVisible || accessibilityServiceContainerVisible || readExternalStorageContainerVisible);
         setLoadConfigurationFileContainerVisible(allowed);
         setLoadedPackageNamesContainerVisible(allowed);
         setPermissionHeaderVisible(!allowed);
@@ -128,16 +148,16 @@ public class MainActivityModel implements Parcelable {
         notifyPropertyChanged(PROPERTY_SELECT_CONFIGURATION_FILE_BUTTON);
     }
 
-    public String getConfigurationFileUri() {
-        return configurationFileUri;
+    public String getConfigurationFilePath() {
+        return configurationFilePath;
     }
 
     public String getConfigurationFileName() {
         return configurationFileName;
     }
 
-    public void setConfigurationFileAttributes(String configurationFileUri, String configurationFileName) {
-        this.configurationFileUri = configurationFileUri;
+    public void setConfigurationFileAttributes(String configurationFilePath, String configurationFileName) {
+        this.configurationFilePath = configurationFilePath;
         this.configurationFileName = configurationFileName;
         notifyPropertyChanged(PROPERTY_CONFIGURATION_FILE_ATTRIBUTES);
     }
@@ -242,9 +262,10 @@ public class MainActivityModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte(permissionsHeaderVisible ? (byte) 1 : (byte) 0);
         dest.writeByte(systemAlertWindowContainerVisible ? (byte) 1 : (byte) 0);
+        dest.writeByte(readExternalStorageContainerVisible ? (byte) 1 : (byte) 0);
         dest.writeByte(accessibilityServiceContainerVisible ? (byte) 1 : (byte) 0);
         dest.writeByte(loadConfigurationFileContainerVisible ? (byte) 1 : (byte) 0);
-        dest.writeString(this.configurationFileUri);
+        dest.writeString(this.configurationFilePath);
         dest.writeString(this.configurationFileName);
         dest.writeByte(loadedPackageNamesContainerVisible ? (byte) 1 : (byte) 0);
         dest.writeByte(loadedPackageNamesEmptyVisible ? (byte) 1 : (byte) 0);
@@ -253,12 +274,14 @@ public class MainActivityModel implements Parcelable {
         dest.writeByte(configurationLoadingInProgress ? (byte) 1 : (byte) 0);
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected MainActivityModel(Parcel in) {
         this.permissionsHeaderVisible = in.readByte() != 0;
         this.systemAlertWindowContainerVisible = in.readByte() != 0;
+        this.readExternalStorageContainerVisible = in.readByte() != 0;
         this.accessibilityServiceContainerVisible = in.readByte() != 0;
         this.loadConfigurationFileContainerVisible = in.readByte() != 0;
-        this.configurationFileUri = in.readString();
+        this.configurationFilePath = in.readString();
         this.configurationFileName = in.readString();
         this.loadedPackageNamesContainerVisible = in.readByte() != 0;
         this.loadedPackageNamesEmptyVisible = in.readByte() != 0;

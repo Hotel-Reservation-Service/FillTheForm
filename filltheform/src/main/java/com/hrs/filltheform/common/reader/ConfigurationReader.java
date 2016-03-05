@@ -27,14 +27,15 @@ import java.lang.annotation.RetentionPolicy;
  */
 public interface ConfigurationReader {
     int SOURCE_ASSETS = 0;
-    int SOURCE_OTHER = 1;
+    int SOURCE_EXTERNAL_STORAGE = 1;
+    int SOURCE_OTHER = 2;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({SOURCE_ASSETS, SOURCE_OTHER})
+    @IntDef({SOURCE_ASSETS, SOURCE_EXTERNAL_STORAGE, SOURCE_OTHER})
     @interface ConfigurationSource {
     }
 
-    void readConfigurationFile(@ConfigurationSource int source, @NonNull String configurationFileUri);
+    void readConfigurationFile(@ConfigurationSource int source, @NonNull String configurationFilePath);
 
     String getConfigurationVariablePattern();
 }
