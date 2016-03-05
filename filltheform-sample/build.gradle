@@ -29,35 +29,42 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
 }
 
+apply plugin: FillTheFormPlugin
+
+//fillTheForm {
+//    configDir = 'blah'
+//}
+
 task updateFillTheFormData(type: IncrementalReverseTask) {
-    inputFile = file('config/example.xml')
+    configDir = file(project.fillTheForm.configDir)
 }
 
 // TODO append on install task
 
 class IncrementalReverseTask extends DefaultTask {
-    @InputFile
-    def File inputFile
+    @InputDirectory
+    def File configDir
 
     @TaskAction
     void execute(IncrementalTaskInputs inputs) {
         //println "test: ${project.android.sdkDirectory}"
-        def File outputDir = new File("$project.buildDir/FormData")
+        def File outputDir = new File("$project.buildDir${File.separator}FormData")
         // TODO avoid copying files
 
         if (!inputs.incremental && outputDir.exists())
             project.delete(outputDir.listFiles())
 
         inputs.outOfDate { change ->
-            if(!outputDir.exists()) {
-                outputDir.mkdirs()
-            }
-            def targetFile = new File(outputDir, change.file.name)
-            targetFile.text = change.file.text
-            def String adb = "${project.android.sdkDirectory}/platform-tools/adb";
+            //def targetFile = new File(outputDir, change.file.name)
+            //targetFile.text = change.file.text
+            def String adb = "${project.android.sdkDirectory}${File.separator}platform-tools${File.separator}adb";
             // TODO find out target device
             def String[] args = [adb, 'push', change.file, "/sdcard/$change.file.name"]
-            new ProcessBuilder(args).redirectErrorStream(true).start()
+            def process = new ProcessBuilder(args).redirectErrorStream(false).start()
+            int exitCode = process.waitFor()
+            if(exitCode != 0) {
+                throw new IllegalStateException("Error in adb: " + new BufferedInputStream(process.errorStream).readLines())
+            }
         }
 
         inputs.removed { change ->
@@ -66,5 +73,23 @@ class IncrementalReverseTask extends DefaultTask {
             def targetFile = new File(outputDir, change.file.name)
             targetFile.delete()
         }
+    }
+}
+
+class FillTheFormPlugin implements Plugin<Project> {
+    void apply(Project project) {
+        // Add our extension object
+        project.extensions.create("fillTheForm", FillTheFormPluginExtension)
+    }
+}
+
+class FillTheFormPluginExtension {
+    def String configDir = 'config'
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name.startsWith('install')) {
+        //println "HOOK at $task.name"
+        task.dependsOn updateFillTheFormData
     }
 }
