@@ -59,6 +59,7 @@ public class MainActivityModelTest {
         assertTrue(model.isPermissionsHeaderVisible());
         assertTrue(model.isSystemAlertWindowContainerVisible());
         assertTrue(model.isAccessibilityServiceContainerVisible());
+        assertTrue(model.isReadExternalStorageContainerVisible());
         verify(propertyChangedListener, times(1)).onPropertyChanged(MainActivityModel.PROPERTY_CONFIGURATION_FILE_ATTRIBUTES);
         verify(propertyChangedListener, times(1)).onPropertyChanged(MainActivityModel.PROPERTY_CONFIGURATION_LOADING_IN_PROGRESS);
     }
@@ -68,6 +69,7 @@ public class MainActivityModelTest {
         // run
         model.setSystemAlertWindowPermissionEnabled(true);
         model.setAccessibilityServiceEnabled(true);
+        model.setReadExternalStorageEnabled(true);
         model.checkIfLoadingOfConfigurationFileIsAllowed();
 
         // verify
@@ -76,10 +78,12 @@ public class MainActivityModelTest {
         assertFalse(model.isPermissionsHeaderVisible());
         assertFalse(model.isSystemAlertWindowContainerVisible());
         assertFalse(model.isAccessibilityServiceContainerVisible());
+        assertFalse(model.isReadExternalStorageContainerVisible());
         verify(propertyChangedListener, times(1)).onPropertyChanged(MainActivityModel.PROPERTY_CONFIGURATION_FILE_ATTRIBUTES);
         verify(propertyChangedListener, times(1)).onPropertyChanged(MainActivityModel.PROPERTY_CONFIGURATION_LOADING_IN_PROGRESS);
         verify(propertyChangedListener, times(1)).onPropertyChanged(MainActivityModel.PROPERTY_ACCESSIBILITY_SERVICE_CONTAINER);
         verify(propertyChangedListener, times(1)).onPropertyChanged(MainActivityModel.PROPERTY_SYSTEM_ALERT_WINDOW_CONTAINER);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(MainActivityModel.PROPERTY_READ_EXTERNAL_STORAGE_CONTAINER);
     }
 
     @Test
@@ -89,6 +93,24 @@ public class MainActivityModelTest {
 
         // verify
         verify(propertyChangedListener, times(1)).onPropertyChanged(MainActivityModel.PROPERTY_SYSTEM_ALERT_WINDOW_PERMISSION);
+    }
+
+    @Test
+    public void testOnEnableAccessibilityServiceButtonClicked() throws Exception {
+        // run
+        model.onEnableAccessibilityServiceButtonClicked();
+
+        // verify
+        verify(propertyChangedListener, times(1)).onPropertyChanged(MainActivityModel.PROPERTY_ACCESSIBILITY_SERVICE_BUTTON);
+    }
+
+    @Test
+    public void testOnEnableReadExternalStorageButtonClicked() throws Exception {
+        // run
+        model.onEnableReadExternalStorageButtonClicked();
+
+        // verify
+        verify(propertyChangedListener, times(1)).onPropertyChanged(MainActivityModel.PROPERTY_READ_EXTERNAL_STORAGE_PERMISSION);
     }
 
     @Test
@@ -116,7 +138,7 @@ public class MainActivityModelTest {
     @Test
     public void testGetConfigurationFileUriShouldBeNull() throws Exception {
         // verify
-        assertEquals(null, model.getConfigurationFileUri());
+        assertEquals(null, model.getConfigurationFilePath());
     }
 
     @Test
@@ -131,7 +153,7 @@ public class MainActivityModelTest {
         model.setConfigurationFileAttributes("uri", "name");
 
         // verify
-        assertEquals("uri", model.getConfigurationFileUri());
+        assertEquals("uri", model.getConfigurationFilePath());
     }
 
     @Test
@@ -149,7 +171,7 @@ public class MainActivityModelTest {
         model.setConfigurationFileAttributes("uri", "name");
 
         // verify
-        assertEquals("uri", model.getConfigurationFileUri());
+        assertEquals("uri", model.getConfigurationFilePath());
         assertEquals("name", model.getConfigurationFileName());
     }
 
@@ -166,15 +188,6 @@ public class MainActivityModelTest {
     public void testIsConfigurationLoadingInProgressShouldReturnFalse() throws Exception {
         // verify
         assertFalse(model.isConfigurationLoadingInProgress());
-    }
-
-    @Test
-    public void testOnEnableAccessibilityServiceButtonClicked() throws Exception {
-        // run
-        model.onEnableAccessibilityServiceButtonClicked();
-
-        // verify
-        verify(propertyChangedListener, times(1)).onPropertyChanged(MainActivityModel.PROPERTY_ACCESSIBILITY_SERVICE_BUTTON);
     }
 
     @Test

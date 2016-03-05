@@ -85,6 +85,30 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/read_external_storage_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/permission_read_external_storage" />
+
+            <Button
+                android:id="@+id/read_external_storage_button"
+                style="?android:buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/activity_vertical_margin_half"
+                android:text="@string/permission_enable_button" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/load_configuration_file_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
