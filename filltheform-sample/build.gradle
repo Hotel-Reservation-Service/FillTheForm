@@ -28,3 +28,43 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
 }
+
+task updateFillTheFormData(type: IncrementalReverseTask) {
+    inputFile = file('config/example.xml')
+}
+
+// TODO append on install task
+
+class IncrementalReverseTask extends DefaultTask {
+    @InputFile
+    def File inputFile
+
+    @TaskAction
+    void execute(IncrementalTaskInputs inputs) {
+        //println "test: ${project.android.sdkDirectory}"
+        def File outputDir = new File("$project.buildDir/FormData")
+        // TODO avoid copying files
+
+        if (!inputs.incremental && outputDir.exists())
+            project.delete(outputDir.listFiles())
+
+        inputs.outOfDate { change ->
+            if(!outputDir.exists()) {
+                outputDir.mkdirs()
+            }
+            def targetFile = new File(outputDir, change.file.name)
+            targetFile.text = change.file.text
+            def String adb = "${project.android.sdkDirectory}/platform-tools/adb";
+            // TODO find out target device
+            def String[] args = [adb, 'push', change.file, "/sdcard/$change.file.name"]
+            new ProcessBuilder(args).redirectErrorStream(true).start()
+        }
+
+        inputs.removed { change ->
+            // TODO remove file
+            println "removed: ${change.file.name}"
+            def targetFile = new File(outputDir, change.file.name)
+            targetFile.delete()
+        }
+    }
+}
