@@ -15,11 +15,15 @@
  */
 package com.hrs.filltheform.main;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
@@ -44,6 +48,11 @@ class PermissionsManager {
         return true;
     }
 
+    public static boolean isReadExternalStoragePermissionEnabled(AppCompatActivity activity) {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
+                || ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
     // Ask
 
     public static void askForSystemAlertWindowPermission(AppCompatActivity activity, int requestCode) {
@@ -53,6 +62,21 @@ class PermissionsManager {
             activity.startActivityForResult(intent, requestCode);
         } else {
             ToastUtil.show(activity, activity.getString(R.string.permission_system_alert_window_already_enabled));
+        }
+    }
+
+    public static void askForReadExternalStoragePermission(final AppCompatActivity activity, final int requestCode) {
+        if (!isReadExternalStoragePermissionEnabled(activity)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                openAppSettings(activity);
+            } else {
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        requestCode);
+            }
+        } else {
+            ToastUtil.show(activity, activity.getString(R.string.permission_read_external_storage_already_enabled));
         }
     }
 

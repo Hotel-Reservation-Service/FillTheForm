@@ -17,6 +17,7 @@ package com.hrs.filltheform.data;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Xml;
@@ -30,6 +31,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -50,12 +52,12 @@ public class XmlConfigurationFileReader implements ConfigurationReader {
         this.configuration = configuration;
     }
 
-    public void readConfigurationFile(@ConfigurationSource int source, @NonNull String configurationFileUri) {
+    public void readConfigurationFile(@ConfigurationSource int source, @NonNull String configurationFilePath) {
         try {
             XmlPullParserFactory pullParserFactory = XmlPullParserFactory.newInstance();
             XmlPullParser parser = pullParserFactory.newPullParser();
 
-            InputStream inputStream = getInputStream(source, configurationFileUri);
+            InputStream inputStream = getInputStream(source, configurationFilePath);
 
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
             parser.setFeature(Xml.FEATURE_RELAXED, true);
@@ -69,14 +71,22 @@ public class XmlConfigurationFileReader implements ConfigurationReader {
         }
     }
 
-    private InputStream getInputStream(@ConfigurationSource int source, @NonNull String configurationFileUri) throws IOException, IllegalArgumentException {
-        if (TextUtils.isEmpty(configurationFileUri)) {
+    private InputStream getInputStream(@ConfigurationSource int source, @NonNull String configurationFilePath) throws IOException, IllegalArgumentException {
+        if (TextUtils.isEmpty(configurationFilePath)) {
             throw new IllegalArgumentException("Configuration file path is empty");
         }
         if (source == SOURCE_ASSETS) {
-            return appContext.getAssets().open(configurationFileUri);
+            return appContext.getAssets().open(configurationFilePath);
         } else {
-            return appContext.getContentResolver().openInputStream(Uri.parse(configurationFileUri));
+            Uri uri;
+            if (source == SOURCE_EXTERNAL_STORAGE) {
+                File sdcard = Environment.getExternalStorageDirectory();
+                File file = new File(sdcard, configurationFilePath);
+                uri = Uri.fromFile(file);
+            } else {
+                uri = Uri.parse(configurationFilePath);
+            }
+            return appContext.getContentResolver().openInputStream(uri);
         }
     }
 

@@ -11,6 +11,8 @@
     <string name="permission_enable_button">Enable</string>
     <string name="permission_system_alert_window">SYSTEM_ALERT_WINDOW\nfor displaying the overlay dialog.</string>
     <string name="permission_system_alert_window_already_enabled">SYSTEM_ALERT_WINDOW already enabled.</string>
+    <string name="permission_read_external_storage">READ_EXTERNAL_STORAGE\nfor reading the config file from sd card.</string>
+    <string name="permission_read_external_storage_already_enabled">READ_EXTERNAL_STORAGE already enabled.</string>
 
     <string name="load_configuration_file_title_text">Load the configuration from</string>
     <string name="select_configuration_file_button">Select another file</string>

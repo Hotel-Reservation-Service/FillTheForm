@@ -34,6 +34,7 @@ public class ConfigurationItem {
     }
 
     public ConfigurationItem(@NonNull ConfigurationItem configurationItem) {
+        //noinspection ConstantConditions
         if (configurationItem != null) {
             this.id = configurationItem.id;
             this.profile = configurationItem.profile;
