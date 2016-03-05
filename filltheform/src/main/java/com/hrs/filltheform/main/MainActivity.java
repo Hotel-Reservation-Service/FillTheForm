@@ -348,7 +348,6 @@ public class MainActivity extends AppCompatActivity implements PropertyChangedLi
                 public void onClick(View v) {
                     Intent launchIntent = getPackageManager().getLaunchIntentForPackage(packageName);
                     if (launchIntent != null) {
-                        launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(launchIntent);
                     } else {
                         ToastUtil.show(getApplicationContext(), getString(R.string.app_is_not_installed));
