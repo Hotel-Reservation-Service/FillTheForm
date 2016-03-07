@@ -21,7 +21,11 @@ import android.widget.Toast;
 /**
  * ToastUtil is used for showing toasts.
  */
-public class ToastUtil {
+public final class ToastUtil {
+
+    private ToastUtil(){
+
+    }
 
     public static void show(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();

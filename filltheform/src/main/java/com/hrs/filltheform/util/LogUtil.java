@@ -20,7 +20,11 @@ import com.hrs.filltheform.BuildConfig;
 /**
  * LogUtil is used for sending log output.
  */
-public class LogUtil {
+public final class LogUtil {
+
+    private LogUtil(){
+
+    }
 
     public static void d(String tag, String msg) {
         if (BuildConfig.DEBUG) {
