@@ -53,6 +53,20 @@ This is the configuration file for the FillTheFormSample app:
         <package>com.hrs.filltheformsampletwo</package>
     </packages>
     <profiles>
+        <profile name="John Doe Profile">
+            <first_name>John</first_name>
+            <last_name>Doe</last_name>
+            <email>john.doe@johndoe.com</email>
+            <email>doe@johndoe.com</email>
+            <city label="The City by the Bay">San Francisco</city>
+            <state>California</state>
+            <country>United States of America</country>
+            <country>USA</country>
+            <phone>(415) 321-654</phone>
+            <zip_code>CA 94129</zip_code>
+            <comment>Welcome to San Francisco!</comment>
+            <device_model>I am using &device_model; from &device_manufacturer;</device_model>
+        </profile>
         <profile name="Max Mustermann Profile">
             <first_name>Max</first_name>
             <last_name>Mustermann</last_name>
@@ -67,20 +81,6 @@ This is the configuration file for the FillTheFormSample app:
             <comment>Viele Grüße aus NRW!</comment>
             <device_model>Ich benutze ein &device_model; von &device_manufacturer;</device_model>
         </profile>
-        <profile name="John Doe Profile">
-            <first_name>John</first_name>
-            <last_name>Doe</last_name>
-            <email>john.doe@johndoe.com</email>
-            <email>doe@johndoe.com</email>
-            <city>San Francisco</city>
-            <state>California</state>
-            <country>United States of America</country>
-            <country>USA</country>
-            <phone>(415) 321-654</phone>
-            <zip_code>CA 94129</zip_code>
-            <comment>Welcome to San Francisco!</comment>
-            <device_model>I am using &device_model; from &device_manufacturer;</device_model>
-        </profile>
         <profile name="Random Test Profile">
             <first_name>random_first_name</first_name>
             <first_name>My first name name is &random_first_name;</first_name>
@@ -88,7 +88,7 @@ This is the configuration file for the FillTheFormSample app:
             <last_name>My last name name is &random_last_name;</last_name>
             <email>random_email</email>
             <email>&random_email_local_part;@xyz.com</email>
-            <city>random_city</city>
+            <city label="Just random city">random_city</city>
             <state>random_state</state>
             <country>random_country</country>
             <phone>random_phone</phone>
@@ -101,7 +101,8 @@ This is the configuration file for the FillTheFormSample app:
     <first_name>Ivan</first_name>
     <last_name>Jukic</last_name>
     <country>Croatia</country>
-    <city>Imotski</city>
+    <city label="I bet you have never been there">Imotski</city>
+    <city label="北京 (Beijing)">北京</city>
     <device_model>&device_manufacturer; &device_model;</device_model>
     <android_version>API Level &device_android_version;</android_version>
     <device_ip_address>Device IP is &device_ip_address;</device_ip_address>
