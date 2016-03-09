@@ -34,6 +34,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 
 /**
  * XmlConfigurationFileReader is responsible for parsing the data from the xml configuration file and setting up the ServiceConfiguration.
@@ -104,11 +105,12 @@ public class XmlConfigurationFileReader implements ConfigurationReader {
                     if (name.equalsIgnoreCase("package")) {
                         configuration.addPackage(parser.nextText());
                     } else if (name.equalsIgnoreCase("profile")) {
-                        profile = parser.getAttributeValue(0);
-                    } else if (profile != null) {
-                        configuration.addConfigurationItem(new ConfigurationItem(name, profile, parser.nextText()));
-                    } else if (!name.equalsIgnoreCase("packages") && !name.equalsIgnoreCase("profiles") && !name.equalsIgnoreCase("fillTheFormConfig")) {
-                        configuration.addConfigurationItem(new ConfigurationItem(name, null, parser.nextText()));
+                        profile = parser.getAttributeValue(null, "name");
+                    } else if (profile != null || !isParentName(name)) {
+                        String label = parser.getAttributeValue(null, "label");
+                        ConfigurationItem configurationItem = new ConfigurationItem(name, profile, parser.nextText());
+                        configurationItem.setLabel(label);
+                        configuration.addConfigurationItem(configurationItem);
                     }
                     break;
                 case XmlPullParser.END_TAG:
@@ -124,6 +126,17 @@ public class XmlConfigurationFileReader implements ConfigurationReader {
         }
 
         configuration.onReadingCompleted();
+    }
+
+    private boolean isParentName(String name) {
+        switch (name.toUpperCase(Locale.ENGLISH)) {
+            case "FILLTHEFORMCONFIG":
+            case "PACKAGES":
+            case "PROFILES":
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override

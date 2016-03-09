@@ -65,7 +65,7 @@ public class ConfigurationItemsAdapter extends RecyclerView.Adapter<Configuratio
         ConfigurationItem configurationItem = model.getConfigurationItem(position);
 
         if (configurationItem != null) {
-            viewHolder.valueTextView.setText(configurationItem.getValue());
+            viewHolder.valueTextView.setText(configurationItem.getLabel());
 
             if (configurationItem.getProfile() != null) {
                 viewHolder.profileTextView.setText(configurationItem.getProfile());

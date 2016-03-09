@@ -26,6 +26,7 @@ public class ConfigurationItem {
     private String profile;
     private String rawValue;
     private String value;
+    private String label;
 
     public ConfigurationItem(String id, String profile, String rawValue) {
         this.id = id;
@@ -69,5 +70,17 @@ public class ConfigurationItem {
 
     public String getRawValue() {
         return rawValue;
+    }
+
+    public String getLabel() {
+        if (label != null) {
+            return label;
+        } else {
+            return value;
+        }
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }
