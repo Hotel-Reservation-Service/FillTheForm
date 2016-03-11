@@ -31,17 +31,17 @@ import com.hrs.filltheform.common.ConfigurationItem;
  */
 public class ConfigurationItemsAdapter extends RecyclerView.Adapter<ConfigurationItemsAdapter.ViewHolder> {
 
-    private final Context appContext;
+    private final Context context;
     private final FillTheFormDialogModel model;
 
     public ConfigurationItemsAdapter(Context context, FillTheFormDialogModel model) {
-        this.appContext = context.getApplicationContext();
+        this.context = context;
         this.model = model;
     }
 
     @Override
     public ConfigurationItemsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View menuItemView = LayoutInflater.from(appContext).inflate(R.layout.dialog_menu_item, parent, false);
+        View menuItemView = LayoutInflater.from(context).inflate(R.layout.dialog_menu_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(menuItemView);
 
         int textViewStyle = R.style.DialogItemNormal;
@@ -54,7 +54,7 @@ public class ConfigurationItemsAdapter extends RecyclerView.Adapter<Configuratio
             viewHolder.valueTextView.setTextAppearance(textViewStyle);
         } else {
             //noinspection deprecation
-            viewHolder.valueTextView.setTextAppearance(appContext, textViewStyle);
+            viewHolder.valueTextView.setTextAppearance(context, textViewStyle);
         }
 
         return viewHolder;
@@ -70,7 +70,7 @@ public class ConfigurationItemsAdapter extends RecyclerView.Adapter<Configuratio
             if (configurationItem.getProfile() != null) {
                 viewHolder.profileTextView.setText(configurationItem.getProfile());
             } else {
-                viewHolder.profileTextView.setText(appContext.getString(R.string.profile_not_found));
+                viewHolder.profileTextView.setText(context.getString(R.string.profile_not_found));
             }
 
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {

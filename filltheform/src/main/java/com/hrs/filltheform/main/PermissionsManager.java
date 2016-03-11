@@ -102,7 +102,7 @@ class PermissionsManager {
         int accessibilityServiceEnabled = 0;
         try {
             accessibilityServiceEnabled = Settings.Secure.getInt(
-                    context.getApplicationContext().getContentResolver(),
+                    context.getContentResolver(),
                     android.provider.Settings.Secure.ACCESSIBILITY_ENABLED);
         } catch (Settings.SettingNotFoundException e) {
             LogUtil.e(TAG, "Setting not found: "
@@ -113,7 +113,7 @@ class PermissionsManager {
             TextUtils.SimpleStringSplitter stringColonSplitter = new TextUtils.SimpleStringSplitter(':');
 
             String settingValue = Settings.Secure.getString(
-                    context.getApplicationContext().getContentResolver(),
+                    context.getContentResolver(),
                     Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
 
             if (settingValue != null) {

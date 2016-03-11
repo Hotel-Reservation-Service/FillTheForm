@@ -26,6 +26,7 @@ import com.hrs.filltheform.common.ConfigurationItem;
 import com.hrs.filltheform.common.reader.ConfigurationReader;
 import com.hrs.filltheform.service.ServiceConfiguration;
 import com.hrs.filltheform.util.LogUtil;
+import com.hrs.filltheformcompanion.FillTheFormCompanion;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -53,7 +54,7 @@ public class XmlConfigurationFileReader implements ConfigurationReader {
         this.configuration = configuration;
     }
 
-    public void readConfigurationFile(@ConfigurationSource int source, @NonNull String configurationFilePath) {
+    public void readConfigurationFile(@FillTheFormCompanion.ConfigurationSource int source, @NonNull String configurationFilePath) {
         try {
             XmlPullParserFactory pullParserFactory = XmlPullParserFactory.newInstance();
             XmlPullParser parser = pullParserFactory.newPullParser();
@@ -72,15 +73,15 @@ public class XmlConfigurationFileReader implements ConfigurationReader {
         }
     }
 
-    private InputStream getInputStream(@ConfigurationSource int source, @NonNull String configurationFilePath) throws IOException, IllegalArgumentException {
+    private InputStream getInputStream(@FillTheFormCompanion.ConfigurationSource int source, @NonNull String configurationFilePath) throws IOException, IllegalArgumentException {
         if (TextUtils.isEmpty(configurationFilePath)) {
             throw new IllegalArgumentException("Configuration file path is empty");
         }
-        if (source == SOURCE_ASSETS) {
+        if (source == FillTheFormCompanion.SOURCE_ASSETS) {
             return appContext.getAssets().open(configurationFilePath);
         } else {
             Uri uri;
-            if (source == SOURCE_EXTERNAL_STORAGE) {
+            if (source == FillTheFormCompanion.SOURCE_EXTERNAL_STORAGE) {
                 File sdcard = Environment.getExternalStorageDirectory();
                 File file = new File(sdcard, configurationFilePath);
                 uri = Uri.fromFile(file);

@@ -26,10 +26,10 @@ import com.hrs.filltheform.R;
 import com.hrs.filltheform.common.ConfigurationItem;
 import com.hrs.filltheform.common.event.EventResolver;
 import com.hrs.filltheform.common.event.EventResolverListener;
-import com.hrs.filltheform.common.reader.ConfigurationReader;
 import com.hrs.filltheform.dialog.FillTheFormDialog;
 import com.hrs.filltheform.util.LogUtil;
 import com.hrs.filltheform.util.ToastUtil;
+import com.hrs.filltheformcompanion.FillTheFormCompanion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,9 +43,6 @@ public class MyAccessibilityService extends android.accessibilityservice.Accessi
 
     private static final String TAG = MyAccessibilityService.class.getSimpleName();
 
-    public static final String INTENT_READ_CONFIGURATION_FILE = "com.hrs.filltheform.INTENT_READ_CONFIGURATION_FILE";
-    public static final String INTENT_EXTRA_CONFIGURATION_FILE_PATH = "com.hrs.filltheform.INTENT_EXTRA_CONFIGURATION_FILE_PATH";
-    public static final String INTENT_EXTRA_CONFIGURATION_FILE_SOURCE = "com.hrs.filltheform.INTENT_EXTRA_CONFIGURATION_FILE_SOURCE";
     public static final String INTENT_ASK_FOR_LOADED_PACKAGE_NAMES = "com.hrs.filltheform.INTENT_ASK_FOR_LOADED_PACKAGE_NAMES";
     public static final String INTENT_SEND_LOADED_PACKAGE_NAMES = "com.hrs.filltheform.INTENT_SEND_LOADED_PACKAGE_NAMES";
     public static final String INTENT_EXTRA_PACKAGE_NAMES = "com.hrs.filltheform.INTENT_EXTRA_PACKAGE_NAMES";
@@ -57,25 +54,28 @@ public class MyAccessibilityService extends android.accessibilityservice.Accessi
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equalsIgnoreCase(INTENT_READ_CONFIGURATION_FILE)) {
-                String configurationFilePath = intent.getStringExtra(INTENT_EXTRA_CONFIGURATION_FILE_PATH);
-                @ConfigurationReader.ConfigurationSource int configurationFileSource = intent.getIntExtra(INTENT_EXTRA_CONFIGURATION_FILE_SOURCE, ConfigurationReader.SOURCE_ASSETS);
-                configuration.init(getApplicationContext(), configurationFileSource, configurationFilePath);
-                fillTheFormDialog.setConfigurationVariablePattern(configuration.getConfigurationVariablePattern());
-            } else if (intent.getAction().equalsIgnoreCase(INTENT_ASK_FOR_LOADED_PACKAGE_NAMES)) {
-                if (configuration != null) {
-                    configuration.resendConfigurationData();
-                }
-            }
+            resolveBroadcastIntent(intent);
         }
     };
+
+    private void resolveBroadcastIntent(Intent intent) {
+        if (intent.getAction().equalsIgnoreCase(INTENT_ASK_FOR_LOADED_PACKAGE_NAMES)) {
+            if (configuration != null) {
+                configuration.resendConfigurationData();
+            }
+        } else {
+            checkCompanionActions(intent);
+        }
+    }
+
+    // Service setup
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(INTENT_READ_CONFIGURATION_FILE);
         intentFilter.addAction(INTENT_ASK_FOR_LOADED_PACKAGE_NAMES);
+        addCompanionActions(intentFilter);
         registerReceiver(broadcastReceiver, intentFilter);
         setUpServiceConfiguration();
     }
@@ -85,20 +85,23 @@ public class MyAccessibilityService extends android.accessibilityservice.Accessi
         configuration.setConfigurationLoaderListener(this);
         eventResolver = new ServiceEventResolver(configuration);
         eventResolver.setEventResolverListener(this);
-        fillTheFormDialog = new FillTheFormDialog(getApplicationContext());
+        fillTheFormDialog = new FillTheFormDialog(this);
     }
 
     // Configuration management
 
     @Override
-    public void onConfigurationCompleted(List<String> packageNames) {
+    public void onConfigurationCompleted(List<String> packageNames, List<String> profiles) {
         sendLoadedPackageNames(packageNames);
+        fillTheFormDialog.setProfiles(profiles);
+        sendBroadcast(new Intent(FillTheFormCompanion.INTENT_REPORT_CONFIGURATION_FINISHED));
     }
 
     @Override
     public void onConfigurationFailed(String errorMessage) {
         ToastUtil.show(this, getString(R.string.error_loading_configuration_file_prefix) + errorMessage);
         sendLoadedPackageNames(null);
+        sendBroadcast(new Intent(FillTheFormCompanion.INTENT_REPORT_CONFIGURATION_FINISHED));
     }
 
     private void sendLoadedPackageNames(List<String> packageNames) {
@@ -135,5 +138,53 @@ public class MyAccessibilityService extends android.accessibilityservice.Accessi
     @Override
     public void onInterrupt() {
 
+    }
+
+    // FillTheFormCompanion support
+
+    private void addCompanionActions(IntentFilter intentFilter) {
+        intentFilter.addAction(FillTheFormCompanion.INTENT_READ_CONFIGURATION_FILE);
+        intentFilter.addAction(FillTheFormCompanion.INTENT_HIDE_FILL_THE_FORM_DIALOG);
+        intentFilter.addAction(FillTheFormCompanion.INTENT_SET_FAST_MODE);
+        intentFilter.addAction(FillTheFormCompanion.INTENT_SET_NORMAL_MODE);
+        intentFilter.addAction(FillTheFormCompanion.INTENT_REQUEST_NUMBER_OF_PROFILES);
+        intentFilter.addAction(FillTheFormCompanion.INTENT_SELECT_NEXT_PROFILE);
+    }
+
+    private void checkCompanionActions(Intent intent) {
+        if (fillTheFormDialog == null) {
+            return;
+        }
+        String action = intent.getAction();
+        switch (action) {
+            case FillTheFormCompanion.INTENT_READ_CONFIGURATION_FILE:
+                String configurationFilePath = intent.getStringExtra(FillTheFormCompanion.INTENT_EXTRA_CONFIGURATION_FILE_PATH);
+                @FillTheFormCompanion.ConfigurationSource int configurationFileSource = intent.getIntExtra(FillTheFormCompanion.INTENT_EXTRA_CONFIGURATION_FILE_SOURCE, FillTheFormCompanion.SOURCE_ASSETS);
+                configuration.init(this, configurationFileSource, configurationFilePath);
+                fillTheFormDialog.setConfigurationVariablePattern(configuration.getConfigurationVariablePattern());
+                break;
+            case FillTheFormCompanion.INTENT_HIDE_FILL_THE_FORM_DIALOG:
+                fillTheFormDialog.hideDialog();
+                break;
+            case FillTheFormCompanion.INTENT_SET_FAST_MODE:
+                fillTheFormDialog.setFastMode();
+                break;
+            case FillTheFormCompanion.INTENT_SET_NORMAL_MODE:
+                fillTheFormDialog.setNormalMode();
+                break;
+            case FillTheFormCompanion.INTENT_REQUEST_NUMBER_OF_PROFILES:
+                int numberOfProfiles = configuration.getNumberOfProfiles();
+                // Answer with number of profiles
+                Intent broadcastIntent = new Intent();
+                broadcastIntent.setAction(FillTheFormCompanion.INTENT_SEND_NUMBER_OF_PROFILES);
+                broadcastIntent.putExtra(FillTheFormCompanion.INTENT_EXTRA_NUMBER_OF_PROFILES, numberOfProfiles);
+                sendBroadcast(broadcastIntent);
+                break;
+            case FillTheFormCompanion.INTENT_SELECT_NEXT_PROFILE:
+                fillTheFormDialog.selectNextProfile();
+                break;
+            default:
+                break;
+        }
     }
 }

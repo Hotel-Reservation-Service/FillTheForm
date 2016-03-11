@@ -23,9 +23,12 @@ import com.hrs.filltheform.common.ConfigurationItem;
 import com.hrs.filltheform.common.reader.ConfigurationReader;
 import com.hrs.filltheform.common.reader.ConfigurationReaderListener;
 import com.hrs.filltheform.data.XmlConfigurationFileReader;
+import com.hrs.filltheformcompanion.FillTheFormCompanion;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * ServiceConfiguration holds the data loaded from the configuration file using ConfigurationReader.
@@ -33,13 +36,14 @@ import java.util.List;
 public class ServiceConfiguration implements ConfigurationReaderListener {
 
     public interface ServiceConfigurationListener {
-        void onConfigurationCompleted(List<String> packageNames);
+        void onConfigurationCompleted(List<String> packageNames, List<String> profiles);
 
         void onConfigurationFailed(String errorMessage);
     }
 
     private final List<String> packageNames = new ArrayList<>();
     private final SimpleArrayMap<String, List<ConfigurationItem>> idGroups = new SimpleArrayMap<>();
+    private final Set<String> profiles = new LinkedHashSet<>();
 
     private ServiceConfigurationListener serviceConfigurationListener;
     private ConfigurationReader configurationReader;
@@ -48,9 +52,10 @@ public class ServiceConfiguration implements ConfigurationReaderListener {
         this.serviceConfigurationListener = serviceConfigurationListener;
     }
 
-    public void init(Context context, @ConfigurationReader.ConfigurationSource int source, @NonNull String configurationFilePath) {
+    public void init(Context context, @FillTheFormCompanion.ConfigurationSource int source, @NonNull String configurationFilePath) {
         packageNames.clear();
         idGroups.clear();
+        profiles.clear();
         if (configurationReader == null) {
             configurationReader = new XmlConfigurationFileReader(context, this);
         }
@@ -68,12 +73,17 @@ public class ServiceConfiguration implements ConfigurationReaderListener {
             idGroups.put(configurationItem.getId(), list);
         }
         list.add(configurationItem);
+        // Add profile
+        if (configurationItem.getProfile() != null) {
+            profiles.add(configurationItem.getProfile());
+        }
     }
 
     @Override
     public void onReadingCompleted() {
         if (serviceConfigurationListener != null) {
-            serviceConfigurationListener.onConfigurationCompleted(packageNames);
+            List<String> profilesList = new ArrayList<>(profiles);
+            serviceConfigurationListener.onConfigurationCompleted(packageNames, profilesList);
         }
     }
 
@@ -103,5 +113,11 @@ public class ServiceConfiguration implements ConfigurationReaderListener {
             return configurationReader.getConfigurationVariablePattern();
         }
         return null;
+    }
+
+    // FillTheFormCompanion support
+
+    public int getNumberOfProfiles() {
+        return profiles.size();
     }
 }

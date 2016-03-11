@@ -1,6 +1,7 @@
 #Changelog
 
 ## Next version
+- FillTheFormCompanion #18: Created an Android library which enables communication with FillTheForm service. Added examples of using FillTheForm with Espresso.
 - Label attribute for configuration item #15: Now we can describe the value using the label attribute.
 - Sdcard as configuration file source #12: We are able to load the configuration file from sdcard using just adb commands.
 - Bugfix #8: Configured app is not restarted any more. Wrong intent flag was removed.

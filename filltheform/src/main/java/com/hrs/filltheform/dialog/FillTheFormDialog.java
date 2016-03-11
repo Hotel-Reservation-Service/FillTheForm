@@ -63,7 +63,7 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
     private RecyclerView configurationItemsView;
     private ImageButton fastModeButton;
 
-    private final Context appContext;
+    private final Context context;
     private final FillTheFormDialogModel model;
     private final int dialogInitialOffset;
     private final ConfigurationVariables configurationVariables;
@@ -71,9 +71,9 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
     private AccessibilityNodeInfo selectedNodeInfo;
 
     public FillTheFormDialog(Context context) {
-        this.appContext = context.getApplicationContext();
+        this.context = context;
         // Get dialog dimensions
-        Resources resources = appContext.getResources();
+        Resources resources = context.getResources();
         int normalDialogWidth = resources.getDimensionPixelOffset(R.dimen.normal_dialog_width);
         int normalDialogHeight = resources.getDimensionPixelOffset(R.dimen.normal_dialog_height);
         int expandedDialogWidth = resources.getDimensionPixelOffset(R.dimen.expanded_dialog_width);
@@ -118,7 +118,7 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
     }
 
     private int getStatusBarHeight() {
-        Resources resources = appContext.getResources();
+        Resources resources = context.getResources();
         int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
             return resources.getDimensionPixelSize(resourceId);
@@ -127,7 +127,7 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
     }
 
     private void prepareDialogView() {
-        windowManager = (WindowManager) appContext.getSystemService(Context.WINDOW_SERVICE);
+        windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         dialogParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -135,7 +135,7 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
 
-        dialogView = new FrameLayout(appContext);
+        dialogView = new FrameLayout(context);
         dialogView.setOnTouchListener(new View.OnTouchListener() {
             final Point screenSize = new Point();
 
@@ -159,7 +159,7 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
             }
         });
 
-        @SuppressLint("InflateParams") final View dialogContent = LayoutInflater.from(appContext).inflate(R.layout.dialog, null);
+        @SuppressLint("InflateParams") final View dialogContent = LayoutInflater.from(context).inflate(R.layout.dialog, null);
         dialogMenu = dialogContent.findViewById(R.id.dialog_menu);
         expandIcon = dialogContent.findViewById(R.id.expand_icon);
         expandIconFastMode = dialogContent.findViewById(R.id.expand_icon_fast_mode);
@@ -197,9 +197,9 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
         // Configuration items list
         configurationItemsView = (RecyclerView) dialogContent.findViewById(R.id.configuration_items_view);
         configurationItemsView.setHasFixedSize(true);
-        configurationItemsView.setLayoutManager(new LinearLayoutManager(appContext));
+        configurationItemsView.setLayoutManager(new LinearLayoutManager(context));
         // Set adapter
-        configurationItemsAdapter = new ConfigurationItemsAdapter(appContext, model);
+        configurationItemsAdapter = new ConfigurationItemsAdapter(context, model);
         configurationItemsView.setAdapter(configurationItemsAdapter);
         dialogView.addView(dialogContent);
     }
@@ -241,7 +241,7 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
     }
 
     private void copyToClipboard(String inputData) {
-        ClipboardManager clipboard = (ClipboardManager) appContext.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText(inputData, inputData);
         clipboard.setPrimaryClip(clip);
     }
@@ -261,13 +261,13 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
     // Fast mode shared prefs management
 
     private void storeFastModeConfigInSharedPreferences() {
-        SharedPreferences.Editor editor = appContext.getSharedPreferences(MainActivity.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = context.getSharedPreferences(MainActivity.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE).edit();
         editor.putBoolean(FAST_MODE_ENABLED_KEY, model.isFastModeEnabled());
         editor.apply();
     }
 
     private void readFastModeConfigFromSharedPreferences() {
-        SharedPreferences prefs = appContext.getSharedPreferences(MainActivity.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences prefs = context.getSharedPreferences(MainActivity.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE);
         boolean fastModeEnabled = prefs.getBoolean(FAST_MODE_ENABLED_KEY, false);
         model.setFastModeEnabled(fastModeEnabled);
     }
@@ -281,7 +281,7 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
                 if (model.isDialogVisible()) {
                     windowManager.addView(dialogView, dialogParams);
                 } else {
-                    windowManager.removeView(dialogView);
+                    removeDialogView();
                 }
                 break;
             case FillTheFormDialogModel.PROPERTY_EXPAND_ICON:
@@ -320,7 +320,7 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
                     dialogParams.width = model.getNormalDialogWidth();
                     dialogParams.height = model.getNormalDialogHeight();
                 }
-                windowManager.updateViewLayout(dialogView, dialogParams);
+                updateDialogViewSize();
                 break;
             case FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION:
                 if (!model.isDialogExpanded()) {
@@ -333,9 +333,9 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
                 windowManager.updateViewLayout(dialogView, dialogParams);
                 break;
             case FillTheFormDialogModel.PROPERTY_OPEN_FILL_THE_FORM_APP_BUTTON:
-                Intent launchIntent = appContext.getPackageManager().getLaunchIntentForPackage(appContext.getPackageName());
+                Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
                 launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                appContext.startActivity(launchIntent);
+                context.startActivity(launchIntent);
                 break;
             case FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES:
                 configurationVariables.clear();
@@ -353,5 +353,39 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
             default:
                 break;
         }
+    }
+
+    private void removeDialogView() {
+        if (windowManager != null && dialogView != null && dialogView.isAttachedToWindow()) {
+            windowManager.removeView(dialogView);
+        }
+    }
+
+    private void updateDialogViewSize() {
+        if (windowManager != null && dialogView != null && dialogView.isAttachedToWindow()) {
+            windowManager.updateViewLayout(dialogView, dialogParams);
+        }
+    }
+
+    // FillTheFormCompanion support
+
+    public void hideDialog() {
+        model.hideDialog();
+    }
+
+    public void setFastMode() {
+        model.setFastModeEnabled(true);
+    }
+
+    public void setNormalMode() {
+        model.setFastModeEnabled(false);
+    }
+
+    public void selectNextProfile() {
+        model.selectNextProfile();
+    }
+
+    public void setProfiles(List<String> profiles) {
+        model.setProfiles(profiles);
     }
 }
