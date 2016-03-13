@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#37474f</color>
+    <color name="colorPrimaryDark">#263238</color>
     <color name="colorAccent">#009688</color>
 
-    <color name="dialog_item_color">@android:color/black</color>
+    <color name="dialog_item_color">@color/colorPrimary</color>
+    <color name="dialog_item_pressed_color">@color/colorAccent</color>
     <color name="dialog_item_profile_color">@android:color/darker_gray</color>
-    <color name="dialog_title_color">@color/colorAccent</color>
-
+    <color name="dialog_title_color">#969696</color>
 </resources>

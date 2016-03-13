@@ -21,7 +21,7 @@
     </style>
 
     <style name="DialogItemPressed" parent="DialogItemNormal">
-        <item name="android:textColor">@android:color/holo_green_dark</item>
+        <item name="android:textColor">@color/dialog_item_pressed_color</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
 

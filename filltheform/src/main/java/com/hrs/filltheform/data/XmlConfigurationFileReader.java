@@ -24,7 +24,7 @@ import android.util.Xml;
 
 import com.hrs.filltheform.common.ConfigurationItem;
 import com.hrs.filltheform.common.reader.ConfigurationReader;
-import com.hrs.filltheform.service.ServiceConfiguration;
+import com.hrs.filltheform.common.reader.ConfigurationReaderListener;
 import com.hrs.filltheform.util.LogUtil;
 import com.hrs.filltheformcompanion.FillTheFormCompanion;
 
@@ -46,12 +46,12 @@ public class XmlConfigurationFileReader implements ConfigurationReader {
     private static final String TAG = XmlConfigurationFileReader.class.getSimpleName();
     private static final String CONFIGURATION_VARIABLE_PATTERN = "&(\\w+);";
 
-    private final ServiceConfiguration configuration;
+    private final ConfigurationReaderListener configurationReaderListener;
     private final Context appContext;
 
-    public XmlConfigurationFileReader(Context context, ServiceConfiguration configuration) {
+    public XmlConfigurationFileReader(Context context, ConfigurationReaderListener configurationReaderListener) {
         this.appContext = context;
-        this.configuration = configuration;
+        this.configurationReaderListener = configurationReaderListener;
     }
 
     public void readConfigurationFile(@FillTheFormCompanion.ConfigurationSource int source, @NonNull String configurationFilePath) {
@@ -68,7 +68,7 @@ public class XmlConfigurationFileReader implements ConfigurationReader {
             parseConfigurationFile(parser);
 
         } catch (XmlPullParserException | IOException | IllegalArgumentException e) {
-            configuration.onReadingFailed(e.toString());
+            configurationReaderListener.onReadingFailed(e.toString());
             LogUtil.e(TAG, e.toString());
         }
     }
@@ -104,14 +104,14 @@ public class XmlConfigurationFileReader implements ConfigurationReader {
                 case XmlPullParser.START_TAG:
                     name = parser.getName();
                     if (name.equalsIgnoreCase("package")) {
-                        configuration.addPackage(parser.nextText());
+                        configurationReaderListener.onPackageName(parser.nextText());
                     } else if (name.equalsIgnoreCase("profile")) {
                         profile = parser.getAttributeValue(null, "name");
                     } else if (profile != null || !isParentName(name)) {
                         String label = parser.getAttributeValue(null, "label");
                         ConfigurationItem configurationItem = new ConfigurationItem(name, profile, parser.nextText());
                         configurationItem.setLabel(label);
-                        configuration.addConfigurationItem(configurationItem);
+                        configurationReaderListener.onConfigurationItem(configurationItem);
                     }
                     break;
                 case XmlPullParser.END_TAG:
@@ -126,7 +126,7 @@ public class XmlConfigurationFileReader implements ConfigurationReader {
             eventType = parser.next();
         }
 
-        configuration.onReadingCompleted();
+        configurationReaderListener.onReadingCompleted();
     }
 
     private boolean isParentName(String name) {

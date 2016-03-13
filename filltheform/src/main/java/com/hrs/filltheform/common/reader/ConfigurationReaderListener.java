@@ -15,11 +15,35 @@
  */
 package com.hrs.filltheform.common.reader;
 
+import com.hrs.filltheform.common.ConfigurationItem;
+
 /**
- * ConfigurationReaderListener receives the information about the status of ConfigurationReader.
+ * ConfigurationReaderListener receives the information about the status and items read by of ConfigurationReader.
  */
 public interface ConfigurationReaderListener {
+    /**
+     * Called when ConfigurationReader has read a new package name.
+     *
+     * @param packageName Package name that has just been read.
+     */
+    void onPackageName(String packageName);
+
+    /**
+     * Called when ConfigurationReader has read a new configuration item.
+     *
+     * @param configurationItem Configuration item that has just been read.
+     */
+    void onConfigurationItem(ConfigurationItem configurationItem);
+
+    /**
+     * Called when reading is finished.
+     */
     void onReadingCompleted();
 
+    /**
+     * Called when an error occurs during the reading.
+     *
+     * @param errorMessage Error message.
+     */
     void onReadingFailed(String errorMessage);
 }

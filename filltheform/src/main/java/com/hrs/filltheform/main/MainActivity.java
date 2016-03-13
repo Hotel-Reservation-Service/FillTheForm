@@ -371,7 +371,7 @@ public class MainActivity extends AppCompatActivity implements PropertyChangedLi
         final List<String> loadedPackageNames = model.getLoadedPackageNames();
         for (int i = 0; i < loadedPackageNames.size(); i++) {
             final String packageName = loadedPackageNames.get(i);
-            Button button = new Button(this);
+            Button button = (Button) getLayoutInflater().inflate(R.layout.package_item_button, null);
             button.setText(packageName);
             button.setOnClickListener(new View.OnClickListener() {
                 @Override

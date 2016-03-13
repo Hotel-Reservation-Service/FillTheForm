@@ -17,7 +17,8 @@
     <string name="load_configuration_file_title_text">Load the configuration from</string>
     <string name="select_configuration_file_button">Select another file</string>
     <string name="load_configuration_file_button">Load configuration</string>
-    <string name="error_loading_configuration_file_prefix">Error loading config file!\n</string>
+    <string name="configuration_success">Configuration successful.</string>
+    <string name="error_loading_configuration_file_prefix">Error loading configuration file!\n</string>
 
     <string name="loaded_package_names_title">Loaded package names:</string>
     <string name="loaded_package_names_empty">You need to load the configuration file first.</string>

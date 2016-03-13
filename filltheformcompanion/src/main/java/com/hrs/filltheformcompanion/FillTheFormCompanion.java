@@ -47,6 +47,7 @@ public class FillTheFormCompanion {
     public static final String INTENT_READ_CONFIGURATION_FILE = "com.hrs.filltheform.INTENT_READ_CONFIGURATION_FILE";
     public static final String INTENT_EXTRA_CONFIGURATION_FILE_PATH = "com.hrs.filltheform.INTENT_EXTRA_CONFIGURATION_FILE_PATH";
     public static final String INTENT_EXTRA_CONFIGURATION_FILE_SOURCE = "com.hrs.filltheform.INTENT_EXTRA_CONFIGURATION_FILE_SOURCE";
+    public static final String INTENT_EXTRA_SHOW_CONFIGURATION_SUCCESS_MESSAGE = "com.hrs.filltheform.INTENT_EXTRA_SHOW_CONFIGURATION_SUCCESS_MESSAGE";
     public static final String INTENT_REPORT_CONFIGURATION_FINISHED = "com.hrs.filltheform.INTENT_REPORT_CONFIGURATION_FINISHED";
     // Visibility
     public static final String INTENT_HIDE_FILL_THE_FORM_DIALOG = "com.hrs.filltheform.INTENT_HIDE_FILL_THE_FORM_DIALOG";
