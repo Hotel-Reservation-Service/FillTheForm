@@ -66,6 +66,8 @@ This is the configuration file for the FillTheFormSample app:
             <zip_code>CA 94129</zip_code>
             <comment>Welcome to San Francisco!</comment>
             <device_model>I am using &device_model; from &device_manufacturer;</device_model>
+            <android_version>My phone has API Level &device_android_version;</android_version>
+            <device_ip_address>IP address of my phone is &device_ip_address;</device_ip_address>
         </profile>
         <profile name="Max Mustermann Profile">
             <first_name>Max</first_name>
@@ -80,6 +82,8 @@ This is the configuration file for the FillTheFormSample app:
             <zip_code>50667</zip_code>
             <comment>Viele Grüße aus NRW!</comment>
             <device_model>Ich benutze ein &device_model; von &device_manufacturer;</device_model>
+            <android_version>&device_model; API ist &device_android_version;</android_version>
+            <device_ip_address>&device_model; IP Adresse ist &device_ip_address;</device_ip_address>
         </profile>
         <profile name="Random Test Profile">
             <first_name>random_first_name</first_name>
@@ -95,6 +99,9 @@ This is the configuration file for the FillTheFormSample app:
             <zip_code>random_zip_code</zip_code>
             <comment>random_text</comment>
             <comment>random_paragraph</comment>
+            <device_model>&random_first_name; has &device_model; from &device_manufacturer;</device_model>
+            <android_version>&device_model; API is &device_android_version;</android_version>
+            <device_ip_address>&device_model; IP is &device_ip_address;</device_ip_address>
         </profile>
     </profiles>
     <!-- No profile -->

@@ -97,6 +97,10 @@ class FillTheFormDialogModel {
     private ConfigurationItem selectedConfigItem;
     private String configurationVariablePattern;
 
+    // Profiles
+    private List<String> profiles;
+    private int selectedProfileIndex;
+
     // Fast mode
     private boolean fastModeEnabled;
 
@@ -134,6 +138,36 @@ class FillTheFormDialogModel {
 
     private void setSelectedConfigItem(ConfigurationItem selectedConfigItem) {
         this.selectedConfigItem = selectedConfigItem;
+    }
+
+    private void selectItemWithNextProfile() {
+        if (sortedConfigurationItems == null
+                || selectedConfigItem == null
+                || selectedConfigItem.getProfile() == null
+                || profiles == null
+                || profiles.isEmpty()) {
+            return;
+        }
+        selectedProfileIndex = (selectedProfileIndex + 1) % profiles.size();
+        String selectedProfile = profiles.get(selectedProfileIndex);
+        for (int i = 0; i < sortedConfigurationItems.size(); i++) {
+            ConfigurationItem item = sortedConfigurationItems.get(i);
+            if (item.getProfile() != null && item.getProfile().equals(selectedProfile)) {
+                setSelectedConfigItem(item);
+                break;
+            }
+        }
+    }
+
+    // Profiles
+
+    public void setProfiles(List<String> profiles) {
+        this.profiles = profiles;
+        selectedProfileIndex = 0;
+    }
+
+    public void selectNextProfile() {
+        selectItemWithNextProfile();
     }
 
     // Configuration items data
@@ -395,6 +429,10 @@ class FillTheFormDialogModel {
         notifyPropertyChanged(PROPERTY_DIALOG_VISIBILITY);
     }
 
+    public void hideDialog() {
+        onCloseButtonClicked();
+    }
+
     // Dialog expanded
 
     public boolean isDialogExpanded() {
@@ -410,9 +448,11 @@ class FillTheFormDialogModel {
     // Close button
 
     public void onCloseButtonClicked() {
-        setDialogVisible(false);
-        setDialogExpanded(false);
-        notifyPropertyChanged(PROPERTY_CLOSE_BUTTON);
+        if (isDialogVisible()) {
+            setDialogVisible(false);
+            setDialogExpanded(false);
+            notifyPropertyChanged(PROPERTY_CLOSE_BUTTON);
+        }
     }
 
     // Minimize button
@@ -425,8 +465,10 @@ class FillTheFormDialogModel {
     // Open fill the form app button
 
     public void onOpenFillTheFormAppButtonClicked() {
-        onCloseButtonClicked();
-        notifyPropertyChanged(PROPERTY_OPEN_FILL_THE_FORM_APP_BUTTON);
+        if (isDialogVisible()) {
+            onCloseButtonClicked();
+            notifyPropertyChanged(PROPERTY_OPEN_FILL_THE_FORM_APP_BUTTON);
+        }
     }
 
     // Expand icon

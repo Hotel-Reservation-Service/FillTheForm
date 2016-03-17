@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hrs.filltheform.common.reader;
-
-import android.support.annotation.NonNull;
-
-import com.hrs.filltheformcompanion.FillTheFormCompanion;
+package com.hrs.filltheformcompanion;
 
 /**
- * ConfigurationReader reads and parses the data from the configuration file.
- * It can report its status to ConfigurationReaderListener.
+ * To be used when problems with FillTheForm or FillTheFormCompanion appear.
  */
-public interface ConfigurationReader {
+public class FillTheFormCompanionException extends Exception {
 
-    void readConfigurationFile(@FillTheFormCompanion.ConfigurationSource int source, @NonNull String configurationFilePath);
+    public FillTheFormCompanionException() {
+    }
 
-    String getConfigurationVariablePattern();
+    public FillTheFormCompanionException(String detailMessage) {
+        super(detailMessage);
+    }
 }

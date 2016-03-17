@@ -37,9 +37,9 @@ import android.widget.TextView;
 
 import com.hrs.filltheform.R;
 import com.hrs.filltheform.common.PropertyChangedListener;
-import com.hrs.filltheform.common.reader.ConfigurationReader;
 import com.hrs.filltheform.service.MyAccessibilityService;
 import com.hrs.filltheform.util.ToastUtil;
+import com.hrs.filltheformcompanion.FillTheFormCompanion;
 
 import java.util.List;
 
@@ -312,14 +312,14 @@ public class MainActivity extends AppCompatActivity implements PropertyChangedLi
                 storeConfigurationFileAttributesInSharedPreferences();
                 break;
             case MainActivityModel.PROPERTY_LOAD_CONFIGURATION_FILE_BUTTON:
-                Intent intent = new Intent(MyAccessibilityService.INTENT_READ_CONFIGURATION_FILE);
+                Intent intent = new Intent(FillTheFormCompanion.INTENT_READ_CONFIGURATION_FILE);
                 String configurationFilePath = model.getConfigurationFilePath();
                 if (TextUtils.isEmpty(configurationFilePath)) {
-                    intent.putExtra(MyAccessibilityService.INTENT_EXTRA_CONFIGURATION_FILE_PATH, model.getConfigurationFileName());
-                    intent.putExtra(MyAccessibilityService.INTENT_EXTRA_CONFIGURATION_FILE_SOURCE, ConfigurationReader.SOURCE_ASSETS);
+                    intent.putExtra(FillTheFormCompanion.INTENT_EXTRA_CONFIGURATION_FILE_PATH, model.getConfigurationFileName());
+                    intent.putExtra(FillTheFormCompanion.INTENT_EXTRA_CONFIGURATION_FILE_SOURCE, FillTheFormCompanion.SOURCE_ASSETS);
                 } else {
-                    intent.putExtra(MyAccessibilityService.INTENT_EXTRA_CONFIGURATION_FILE_PATH, configurationFilePath);
-                    intent.putExtra(MyAccessibilityService.INTENT_EXTRA_CONFIGURATION_FILE_SOURCE, ConfigurationReader.SOURCE_OTHER);
+                    intent.putExtra(FillTheFormCompanion.INTENT_EXTRA_CONFIGURATION_FILE_PATH, configurationFilePath);
+                    intent.putExtra(FillTheFormCompanion.INTENT_EXTRA_CONFIGURATION_FILE_SOURCE, FillTheFormCompanion.SOURCE_OTHER);
                 }
                 sendBroadcast(intent);
                 break;
@@ -380,7 +380,7 @@ public class MainActivity extends AppCompatActivity implements PropertyChangedLi
                     if (launchIntent != null) {
                         startActivity(launchIntent);
                     } else {
-                        ToastUtil.show(getApplicationContext(), getString(R.string.app_is_not_installed));
+                        ToastUtil.show(MainActivity.this, getString(R.string.app_is_not_installed));
                     }
                 }
             });

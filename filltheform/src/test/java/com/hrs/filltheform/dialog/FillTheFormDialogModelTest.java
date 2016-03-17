@@ -338,6 +338,48 @@ public class FillTheFormDialogModelTest {
     }
 
     @Test
+    public void testNextProfileShouldBeUsedWhenNextEditTextIsSelected() {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        selectedConfigurationItems.add(new ConfigurationItem("view_id", "generic_profile", "Generic data"));
+        List<String> profiles = new ArrayList<>();
+        profiles.add("myprofile");
+        profiles.add("other_profile");
+        profiles.add("generic_profile");
+        model.setProfiles(profiles);
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
+
+        // verify
+        assertEquals("Ivan", model.getConfigurationItem(0).getValue());
+        assertEquals("Ivan", model.getConfigurationItem(0).getLabel());
+
+        // run
+        model.selectNextProfile();
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_CLICKED, selectedConfigurationItems);
+
+        // verify
+        assertEquals("Max", model.getConfigurationItem(0).getValue());
+        assertEquals("Max", model.getConfigurationItem(0).getLabel());
+
+        // run
+        model.selectNextProfile();
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_CLICKED, selectedConfigurationItems);
+
+        assertEquals("Generic data", model.getConfigurationItem(0).getValue());
+        assertEquals("Generic data", model.getConfigurationItem(0).getLabel());
+
+        // run
+        model.selectNextProfile();
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_CLICKED, selectedConfigurationItems);
+
+        // verify
+        assertEquals("Ivan", model.getConfigurationItem(0).getValue());
+        assertEquals("Ivan", model.getConfigurationItem(0).getLabel());
+    }
+
+    @Test
     public void testOnConfigurationItemClickedWhenSelectedConfigItemIsNull() throws Exception {
         // run
         model.onConfigurationItemClicked(0);
@@ -781,6 +823,32 @@ public class FillTheFormDialogModelTest {
         verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
     }
 
+    @Test
+    public void testHideDialogShouldDoNothing() throws Exception {
+        // run
+        model.hideDialog();
+
+        // verify
+        assertFalse(model.isDialogVisible());
+        assertFalse(model.isDialogExpanded());
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLOSE_BUTTON);
+    }
+
+    @Test
+    public void testHideDialogShouldHideTheDialog() throws Exception {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
+        model.hideDialog();
+
+        // verify
+        assertFalse(model.isDialogVisible());
+        assertFalse(model.isDialogExpanded());
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLOSE_BUTTON);
+    }
+
     // Dialog position
 
     @Test
@@ -985,10 +1053,24 @@ public class FillTheFormDialogModelTest {
         assertFalse(model.isDialogExpanded());
     }
 
+    @Test
+    public void testOnCloseButtonClickedShouldDoNothing() throws Exception {
+        // run
+        model.onCloseButtonClicked();
+
+        // verify
+        assertFalse(model.isDialogVisible());
+        assertFalse(model.isDialogExpanded());
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLOSE_BUTTON);
+    }
 
     @Test
-    public void testOnCloseButtonClicked() throws Exception {
+    public void testOnCloseButtonClickedShouldCloseTheDialog() throws Exception {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+
         // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
         model.onCloseButtonClicked();
 
         // verify
@@ -1008,8 +1090,23 @@ public class FillTheFormDialogModelTest {
     }
 
     @Test
-    public void testOnOpenFillTheFormAppButtonClicked() throws Exception {
+    public void testOnOpenFillTheFormAppButtonClickShouldDoNothing() throws Exception {
+        model.onOpenFillTheFormAppButtonClicked();
+
+        // verify
+        assertFalse(model.isDialogVisible());
+        assertFalse(model.isDialogExpanded());
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLOSE_BUTTON);
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_OPEN_FILL_THE_FORM_APP_BUTTON);
+    }
+
+    @Test
+    public void testOnOpenFillTheFormAppButtonClickShouldOpenTheFillTheFormApp() throws Exception {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+
         // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
         model.onOpenFillTheFormAppButtonClicked();
 
         // verify

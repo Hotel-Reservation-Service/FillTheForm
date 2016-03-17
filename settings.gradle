@@ -1,1 +1,1 @@
-include ':filltheform', ':filltheform-sample'
+include ':filltheform', ':filltheform-sample', ':filltheformcompanion'
