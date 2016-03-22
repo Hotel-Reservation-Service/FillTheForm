@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply from: 'FillTheFormPlugin.gradle'
 
 android {
     compileSdkVersion 23
@@ -29,90 +30,8 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
 }
 
-apply plugin: FillTheFormPlugin
-
 // example to override settings
 fillTheForm {
 //    configDir = 'blah'
 //    updateOnInstall = false
-}
-
-task updateFillTheFormData(type: IncrementalReverseTask) {
-    configDir = file(project.fillTheForm.configDir)
-}
-
-class IncrementalReverseTask extends DefaultTask {
-    @InputDirectory
-    def File configDir
-
-    @TaskAction
-    void execute(IncrementalTaskInputs inputs) {
-        def String adb = "${project.android.sdkDirectory}${File.separator}platform-tools${File.separator}adb";
-        def process = new ProcessBuilder([adb, "devices"]).redirectErrorStream(false).start()
-        def int exitCode = process.waitFor()
-        if(exitCode != 0) {
-            throw new IllegalStateException("Failed to get list of devices")
-        }
-        List<String> output = new BufferedInputStream(process.inputStream).readLines()
-        List<String> devices = new ArrayList<>(output.size() - 2)
-        for (int i = 1; i < output.size() - 1; i++) {
-            String device = output.get(i);
-            devices.add(device.substring(0, device.indexOf("\t")))
-        }
-
-        //println "devices: " + devices.join(",")
-
-        inputs.outOfDate { change ->
-            for (def device : devices) {
-                def String[] args = [adb, '-s', device, 'push', change.file, "/sdcard/$change.file.name"]
-                process = new ProcessBuilder(args).redirectErrorStream(false).start()
-                exitCode = process.waitFor()
-                if (exitCode != 0) {
-                    throw new IllegalStateException("Error in adb:" + System.lineSeparator() +
-                            new BufferedInputStream(process.errorStream).readLines().join(System.lineSeparator()))
-                }
-                def prefix = 'com.hrs.filltheform.INTENT_'
-                args = [adb, '-s', device, "shell", "am broadcast -a ${prefix}READ_CONFIGURATION_FILE --es ${prefix}EXTRA_CONFIGURATION_FILE_PATH $change.file --ei ${prefix}EXTRA_CONFIGURATION_FILE_SOURCE 1"]
-                process = new ProcessBuilder(args).redirectErrorStream(false).start()
-                exitCode = process.waitFor()
-                if (exitCode != 0) {
-                    throw new IllegalStateException("Error in adb:" + System.lineSeparator() +
-                            new BufferedInputStream(process.errorStream).readLines().join(System.lineSeparator()))
-                }
-            }
-        }
-
-        inputs.removed { change ->
-            for (def device : devices) {
-                def String[] args = [adb, '-s', device, 'shell', 'rm', "/sdcard/$change.file.name"]
-                process = new ProcessBuilder(args).redirectErrorStream(false).start()
-                exitCode = process.waitFor()
-                if (exitCode != 0) {
-                    throw new IllegalStateException("Error in adb:" + System.lineSeparator() +
-                            new BufferedInputStream(process.errorStream).readLines().join(System.lineSeparator()))
-                }
-            }
-        }
-    }
-}
-
-class FillTheFormPlugin implements Plugin<Project> {
-    void apply(Project project) {
-        // Add our extension object
-        project.extensions.create("fillTheForm", FillTheFormPluginExtension)
-    }
-}
-
-class FillTheFormPluginExtension {
-    def String configDir = 'config'
-    def boolean updateOnInstall = true
-}
-
-if(fillTheForm.updateOnInstall) {
-    tasks.whenTaskAdded { task ->
-        if (task.name.startsWith('install')) {
-            logger.debug("Task \"updateFillTheFormData\" will been called before \"$task.name\"")
-            task.dependsOn updateFillTheFormData
-        }
-    }
 }
