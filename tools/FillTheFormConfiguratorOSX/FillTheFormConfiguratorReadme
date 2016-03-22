@@ -1,0 +1,16 @@
+FillTheFormConfigurator-v0.2.0
+
+This is a simple Automator Application which helps to configure FillTheForm.
+It pushes configuration file to your Android device ('/sdcard/FillTheForm/your_file_name.xml'),
+and then tells FillTheForm to use that configuration file.
+
+How to use?
+1) Unpack the .zip file
+1) Connect your Android device to your mac.
+2) Install FillTheForm on your Android device and enable all required permissions.
+3) Drag&drop your FillTheForm configuration files to FillTheFormConfigurator-v0.2.0.app icon.
+4) FillTheForm should be configured.
+
+Commands used:
+adb push "$f" "/sdcard/FillTheForm/$filename"
+adb shell "am broadcast -a com.hrs.filltheform.INTENT_READ_CONFIGURATION_FILE --es com.hrs.filltheform.INTENT_EXTRA_CONFIGURATION_FILE_PATH '/FillTheForm/$filename' --ei com.hrs.filltheform.INTENT_EXTRA_CONFIGURATION_FILE_SOURCE 1 --ez com.hrs.filltheform.INTENT_EXTRA_SHOW_CONFIGURATION_SUCCESS_MESSAGE true"

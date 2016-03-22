@@ -36,6 +36,8 @@ import java.util.Set;
 public class ServiceConfiguration implements ConfigurationReaderListener {
 
     public interface ServiceConfigurationListener {
+        void onResendConfiguration(List<String> packageNames);
+
         void onConfigurationCompleted(List<String> packageNames, List<String> profiles);
 
         void onConfigurationFailed(String errorMessage);
@@ -62,11 +64,13 @@ public class ServiceConfiguration implements ConfigurationReaderListener {
         configurationReader.readConfigurationFile(source, configurationFilePath);
     }
 
-    public void addPackage(String packageName) {
+    @Override
+    public void onPackageName(String packageName) {
         packageNames.add(packageName);
     }
 
-    public void addConfigurationItem(ConfigurationItem configurationItem) {
+    @Override
+    public void onConfigurationItem(ConfigurationItem configurationItem) {
         List<ConfigurationItem> list = idGroups.get(configurationItem.getId());
         if (list == null) {
             list = new ArrayList<>();
@@ -95,8 +99,8 @@ public class ServiceConfiguration implements ConfigurationReaderListener {
     }
 
     public void resendConfigurationData() {
-        if (!packageNames.isEmpty()) {
-            onReadingCompleted();
+        if (serviceConfigurationListener != null && !packageNames.isEmpty()) {
+            serviceConfigurationListener.onResendConfiguration(packageNames);
         }
     }
 

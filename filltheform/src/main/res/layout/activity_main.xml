@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2015 HRS GmbH
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2015 HRS GmbH
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -164,7 +163,7 @@
                 android:id="@+id/loaded_package_names_empty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/activity_vertical_margin_half"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:text="@string/loaded_package_names_empty" />
 
             <ProgressBar
@@ -182,8 +181,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin_half"
+                android:paddingTop="@dimen/activity_vertical_margin_half"
+                android:clipToPadding="false"
                 android:gravity="center_horizontal"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/activity_vertical_margin_half">
 
             </LinearLayout>
 

@@ -50,6 +50,7 @@ public class MyAccessibilityService extends android.accessibilityservice.Accessi
     private ServiceConfiguration configuration;
     private EventResolver eventResolver;
     private FillTheFormDialog fillTheFormDialog;
+    private boolean showConfigurationSuccessMessage;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -91,10 +92,18 @@ public class MyAccessibilityService extends android.accessibilityservice.Accessi
     // Configuration management
 
     @Override
+    public void onResendConfiguration(List<String> packageNames) {
+        sendLoadedPackageNames(packageNames);
+    }
+
+    @Override
     public void onConfigurationCompleted(List<String> packageNames, List<String> profiles) {
         sendLoadedPackageNames(packageNames);
         fillTheFormDialog.setProfiles(profiles);
         sendBroadcast(new Intent(FillTheFormCompanion.INTENT_REPORT_CONFIGURATION_FINISHED));
+        if (showConfigurationSuccessMessage) {
+            ToastUtil.show(this, getString(R.string.configuration_success));
+        }
     }
 
     @Override
@@ -158,6 +167,7 @@ public class MyAccessibilityService extends android.accessibilityservice.Accessi
         String action = intent.getAction();
         switch (action) {
             case FillTheFormCompanion.INTENT_READ_CONFIGURATION_FILE:
+                showConfigurationSuccessMessage = intent.getBooleanExtra(FillTheFormCompanion.INTENT_EXTRA_SHOW_CONFIGURATION_SUCCESS_MESSAGE, false);
                 String configurationFilePath = intent.getStringExtra(FillTheFormCompanion.INTENT_EXTRA_CONFIGURATION_FILE_PATH);
                 @FillTheFormCompanion.ConfigurationSource int configurationFileSource = intent.getIntExtra(FillTheFormCompanion.INTENT_EXTRA_CONFIGURATION_FILE_SOURCE, FillTheFormCompanion.SOURCE_ASSETS);
                 configuration.init(this, configurationFileSource, configurationFilePath);
