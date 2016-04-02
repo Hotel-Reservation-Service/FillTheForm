@@ -14,7 +14,7 @@ Now you can fill out every EditText with just a long press!
 [![FillTheForm Speed Test](http://i.imgur.com/w3Ic0H9.png)](https://youtu.be/99MNtYpOUlk "FillTheForm Speed Test")
 
 ## Requirements
-* Android 5+
+* Android 4.4+
 * FillTheFormSample app or your Android app with EditText elements that have id-s
 
 ## Usage

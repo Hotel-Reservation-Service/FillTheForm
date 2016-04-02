@@ -1,5 +1,11 @@
 #Changelog
 
+## Next version
+- Fixed changing items on Pre-Lollipop devices #22.
+- AccessibilityNodeInfo replaced with AccessibilityNodeInfoCompat.
+- Menu icons dimensions changed.
+- Android Plugin for Gradle updated to 2.0.0.
+
 ## v0.8.0
 - FillTheForm app UI update #20: Added new icon. Changed theme colors. Package item button style changed.
 - Added new constant (INTENT_EXTRA_SHOW_CONFIGURATION_SUCCESS_MESSAGE) to FillTheFormCompanion and MyAccessibilityService.

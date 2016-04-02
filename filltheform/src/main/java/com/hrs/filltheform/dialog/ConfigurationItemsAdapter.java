@@ -41,13 +41,13 @@ public class ConfigurationItemsAdapter extends RecyclerView.Adapter<Configuratio
 
     @Override
     public ConfigurationItemsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View menuItemView = LayoutInflater.from(context).inflate(R.layout.dialog_menu_item, parent, false);
+        View menuItemView = LayoutInflater.from(context).inflate(R.layout.dialog_list_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(menuItemView);
 
-        int textViewStyle = R.style.DialogItemNormal;
+        int textViewStyle = R.style.DialogListItemNormal;
 
         if (viewType == FillTheFormDialogModel.VIEW_TYPE_SELECTED_ITEM) {
-            textViewStyle = R.style.DialogItemPressed;
+            textViewStyle = R.style.DialogListItemPressed;
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

@@ -8,19 +8,21 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="DialogItemNormal">
+    <style name="DialogListItemNormal">
         <item name="android:textColor">@color/dialog_item_color</item>
         <item name="android:textSize">@dimen/dialog_menu_item_text_size</item>
         <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textStyle">normal</item>
     </style>
 
-    <style name="DialogItemContext">
+    <style name="DialogListItemProfile">
         <item name="android:textColor">@color/dialog_item_profile_color</item>
         <item name="android:textSize">@dimen/dialog_menu_item_context_text_size</item>
         <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textStyle">normal</item>
     </style>
 
-    <style name="DialogItemPressed" parent="DialogItemNormal">
+    <style name="DialogListItemPressed" parent="DialogListItemNormal">
         <item name="android:textColor">@color/dialog_item_pressed_color</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
@@ -29,6 +31,12 @@
         <item name="android:textColor">@color/dialog_title_color</item>
         <item name="android:textSize">@dimen/dialog_title_text_size</item>
         <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="DialogToolbarItem">
+        <item name="android:padding">@dimen/dialog_menu_button_padding</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:background">@null</item>
     </style>
 
 </resources>

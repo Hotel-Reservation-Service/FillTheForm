@@ -13,8 +13,9 @@
     <dimen name="dialog_expand_icon_fast_mode_padding">8dp</dimen>
     <dimen name="dialog_title_text_size">20dp</dimen>
 
+    <dimen name="dialog_menu_title_margin">5dp</dimen>
     <dimen name="dialog_menu_padding">4dp</dimen>
-    <dimen name="dialog_menu_button_width_height">35dp</dimen>
+    <dimen name="dialog_menu_button_width_height">34dp</dimen>
     <dimen name="dialog_menu_button_padding">7dp</dimen>
     <dimen name="dialog_menu_item_padding">5dp</dimen>
     <dimen name="dialog_menu_item_text_size">20dp</dimen>

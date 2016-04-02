@@ -50,6 +50,11 @@ public class MainActivityDynamicTest {
         companion.setFastMode();
     }
 
+    @After
+    public void tearDown() throws Exception {
+        companion.hideFillTheFormDialog();
+    }
+
     private void registerFillTheFormCompanionIdlingResources() {
         configurationStatusIdlingResource = new ConfigurationStatusIdlingResource(companion);
         numberOfProfilesIdlingResource = new NumberOfProfilesIdlingResource(companion);
@@ -102,7 +107,6 @@ public class MainActivityDynamicTest {
     @Test
     public void testWithOneProfile() {
         clickOnEveryEditTextField(true);
-        companion.hideFillTheFormDialog();
     }
 
     @Test
@@ -120,8 +124,6 @@ public class MainActivityDynamicTest {
             clickOnEveryEditTextField(i == 0);
             companion.selectNextProfile();
         }
-
-        companion.hideFillTheFormDialog();
     }
 
     @Test

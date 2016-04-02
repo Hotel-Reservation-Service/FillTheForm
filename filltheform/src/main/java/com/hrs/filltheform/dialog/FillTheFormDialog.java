@@ -27,15 +27,16 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
@@ -68,7 +69,7 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
     private final int dialogInitialOffset;
     private final ConfigurationVariables configurationVariables;
     private ConfigurationItemsAdapter configurationItemsAdapter;
-    private AccessibilityNodeInfo selectedNodeInfo;
+    private AccessibilityNodeInfoCompat selectedNodeInfo;
 
     public FillTheFormDialog(Context context) {
         this.context = context;
@@ -93,8 +94,12 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
         this.configurationVariables = new ConfigurationVariables(context);
     }
 
-    public void showDialog(AccessibilityNodeInfo selectedNodeInfo, int accessibilityEventType, List<ConfigurationItem> selectedConfigurationItems) {
-        this.selectedNodeInfo = selectedNodeInfo;
+    public void showDialog(AccessibilityNodeInfoCompat nodeInfo, int accessibilityEventType, List<ConfigurationItem> selectedConfigurationItems) {
+        if (selectedNodeInfo != null) {
+            selectedNodeInfo.recycle();
+            selectedNodeInfo = null;
+        }
+        selectedNodeInfo = nodeInfo;
         model.showDialog(getModelEventType(accessibilityEventType), selectedConfigurationItems);
     }
 
@@ -224,26 +229,52 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
     // Fill selected node with data
 
     private void fillTheSelectedNodeWithData(String inputData) {
-        Bundle arguments = new Bundle();
-        arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, inputData);
-
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            copyToClipboard(inputData);
-            selectedNodeInfo.performAction(AccessibilityNodeInfo.ACTION_PASTE);
+            fillPreLollipop(inputData);
         } else {
-            selectedNodeInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+            Bundle arguments = new Bundle();
+            arguments.putCharSequence(AccessibilityNodeInfoCompat.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, inputData);
+            selectedNodeInfo.performAction(AccessibilityNodeInfoCompat.ACTION_SET_TEXT, arguments);
         }
     }
 
-    private void pasteTheData(String inputData) {
+    private void fillPreLollipop(String inputData) {
+        boolean shouldRecycle = true;
+        AccessibilityNodeInfoCompat nodeInfo = null;
+        List<AccessibilityNodeInfoCompat> nodeInfoList = selectedNodeInfo.findAccessibilityNodeInfosByViewId(selectedNodeInfo.getViewIdResourceName());
+        if (nodeInfoList != null && nodeInfoList.size() > 0) {
+            nodeInfo = nodeInfoList.get(0);
+        }
+        if (nodeInfo == null) {
+            nodeInfo = selectedNodeInfo;
+            shouldRecycle = false;
+        }
+        selectAll(nodeInfo);
         copyToClipboard(inputData);
-        selectedNodeInfo.performAction(AccessibilityNodeInfo.ACTION_PASTE);
+        nodeInfo.performAction(AccessibilityNodeInfoCompat.ACTION_PASTE);
+        if (shouldRecycle) {
+            nodeInfo.recycle();
+        }
     }
 
     private void copyToClipboard(String inputData) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText(inputData, inputData);
         clipboard.setPrimaryClip(clip);
+    }
+
+    private void selectAll(AccessibilityNodeInfoCompat nodeInfo) {
+        if (!TextUtils.isEmpty(nodeInfo.getText())) {
+            Bundle arguments = new Bundle();
+            arguments.putInt(AccessibilityNodeInfoCompat.ACTION_ARGUMENT_SELECTION_START_INT, 0);
+            arguments.putInt(AccessibilityNodeInfoCompat.ACTION_ARGUMENT_SELECTION_END_INT, nodeInfo.getText().length());
+            nodeInfo.performAction(AccessibilityNodeInfoCompat.ACTION_SET_SELECTION, arguments);
+        }
+    }
+
+    private void pasteTheData(String inputData) {
+        copyToClipboard(inputData);
+        selectedNodeInfo.performAction(AccessibilityNodeInfoCompat.ACTION_PASTE);
     }
 
     // FillTheFormDialogModelHelper methods
