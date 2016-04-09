@@ -8,8 +8,8 @@ android {
         applicationId "com.hrs.filltheform"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 2
-        versionName "0.8.0"
+        versionCode 3
+        versionName "0.8.1"
     }
     buildTypes {
         release {

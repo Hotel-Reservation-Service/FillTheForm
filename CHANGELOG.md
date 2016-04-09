@@ -1,6 +1,6 @@
 #Changelog
 
-## Next version
+## v0.8.1
 - Fixed changing items on Pre-Lollipop devices #22.
 - AccessibilityNodeInfo replaced with AccessibilityNodeInfoCompat.
 - Menu icons dimensions changed.
