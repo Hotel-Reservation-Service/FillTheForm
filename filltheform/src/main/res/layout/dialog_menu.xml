@@ -28,49 +28,41 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_margin="@dimen/dialog_menu_title_margin"
             android:layout_weight="1"
             android:text="@string/dialog_menu_title"
             android:textAppearance="@style/DialogTitle" />
 
         <ImageButton
             android:id="@+id/fast_mode_button"
+            style="@style/DialogToolbarItem"
             android:layout_width="@dimen/dialog_menu_button_width_height"
             android:layout_height="@dimen/dialog_menu_button_width_height"
-            android:background="@null"
             android:contentDescription="@string/dialog_menu_open_fill_the_form_app"
-            android:padding="@dimen/dialog_menu_button_padding"
-            android:scaleType="fitXY"
             android:src="@drawable/ic_normal_mode" />
 
         <ImageButton
             android:id="@+id/open_fill_the_form_app_button"
+            style="@style/DialogToolbarItem"
             android:layout_width="@dimen/dialog_menu_button_width_height"
             android:layout_height="@dimen/dialog_menu_button_width_height"
-            android:background="@null"
             android:contentDescription="@string/dialog_menu_open_fill_the_form_app"
-            android:padding="@dimen/dialog_menu_button_padding"
-            android:scaleType="fitXY"
             android:src="@android:drawable/ic_menu_preferences" />
 
         <ImageButton
             android:id="@+id/minimize_button"
+            style="@style/DialogToolbarItem"
             android:layout_width="@dimen/dialog_menu_button_width_height"
             android:layout_height="@dimen/dialog_menu_button_width_height"
-            android:background="@null"
             android:contentDescription="@string/dialog_menu_minimize"
-            android:padding="@dimen/dialog_menu_button_padding"
-            android:scaleType="fitXY"
             android:src="@android:drawable/ic_menu_more" />
 
         <ImageButton
             android:id="@+id/close_button"
+            style="@style/DialogToolbarItem"
             android:layout_width="@dimen/dialog_menu_button_width_height"
             android:layout_height="@dimen/dialog_menu_button_width_height"
-            android:background="@null"
             android:contentDescription="@string/dialog_menu_close"
-            android:padding="@dimen/dialog_menu_button_padding"
-            android:scaleType="fitXY"
             android:src="@android:drawable/ic_menu_close_clear_cancel" />
 
     </LinearLayout>

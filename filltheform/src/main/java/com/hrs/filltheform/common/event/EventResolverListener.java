@@ -15,7 +15,7 @@
  */
 package com.hrs.filltheform.common.event;
 
-import android.view.accessibility.AccessibilityNodeInfo;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 
 import com.hrs.filltheform.common.ConfigurationItem;
 
@@ -25,7 +25,7 @@ import java.util.List;
  * EventResolverListener is used to receive results from EventResolver.
  */
 public interface EventResolverListener {
-    void onDataForSelectedNodeAvailable(AccessibilityNodeInfo selectedNodeInfo, int accessibilityEventType, List<ConfigurationItem> selectedConfigurationItems);
+    void onDataForSelectedNodeAvailable(AccessibilityNodeInfoCompat selectedNodeInfo, int accessibilityEventType, List<ConfigurationItem> selectedConfigurationItems);
 
-    void onDataForSelectedNodeNotAvailable(AccessibilityNodeInfo selectedNodeInfo);
+    void onDataForSelectedNodeNotAvailable(AccessibilityNodeInfoCompat selectedNodeInfo);
 }

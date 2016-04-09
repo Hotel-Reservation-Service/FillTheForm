@@ -16,8 +16,10 @@
 package com.hrs.filltheform.service;
 
 import android.support.annotation.NonNull;
+import android.support.v4.view.accessibility.AccessibilityEventCompat;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
+import android.support.v4.view.accessibility.AccessibilityRecordCompat;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.hrs.filltheform.common.ConfigurationItem;
 import com.hrs.filltheform.common.event.EventResolver;
@@ -52,11 +54,6 @@ public class ServiceEventResolver implements EventResolver {
             return;
         }
 
-        AccessibilityNodeInfo node = event.getSource();
-        if (node == null) {
-            return;
-        }
-
         String eventPackageName = null;
 
         for (int i = 0; i < configuration.getPackageNames().size(); i++) {
@@ -66,26 +63,46 @@ public class ServiceEventResolver implements EventResolver {
             }
         }
 
-        if (eventPackageName != null) {
-            boolean found = false;
-            for (int i = 0; i < configuration.getIdGroups().size(); i++) {
-                String idGroupKey = configuration.getIdGroups().keyAt(i);
-                List<AccessibilityNodeInfo> nodeInfoList = node.findAccessibilityNodeInfosByViewId(eventPackageName + ":id/" + idGroupKey);
+        if (eventPackageName == null) {
+            return;
+        }
+
+        final AccessibilityRecordCompat record = AccessibilityEventCompat.asRecord(event);
+        final AccessibilityNodeInfoCompat node = record.getSource();
+
+        if (node == null) {
+            return;
+        }
+
+        boolean found = false;
+        for (int i = 0; i < configuration.getIdGroups().size(); i++) {
+            String idGroupKey = configuration.getIdGroups().keyAt(i);
+            String targetViewId = eventPackageName + ":id/" + idGroupKey;
+            if (targetViewId.equals(node.getViewIdResourceName())) {
+                found = true;
+                notifyEventResolverListener(node, event, idGroupKey);
+                break;
+            } else {
+                List<AccessibilityNodeInfoCompat> nodeInfoList = node.findAccessibilityNodeInfosByViewId(targetViewId);
                 if (nodeInfoList != null && nodeInfoList.size() > 0) {
-                    AccessibilityNodeInfo info = nodeInfoList.get(0);
+                    AccessibilityNodeInfoCompat nodeInfo = nodeInfoList.get(0);
                     found = true;
-                    List<ConfigurationItem> selectedConfigurationItems = configuration.getIdGroups().get(idGroupKey);
-                    if (eventResolverListener != null) {
-                        eventResolverListener.onDataForSelectedNodeAvailable(info, event.getEventType(), selectedConfigurationItems);
-                    }
+                    notifyEventResolverListener(nodeInfo, event, idGroupKey);
                     break;
                 }
             }
-            if (!found) {
-                if (eventResolverListener != null) {
-                    eventResolverListener.onDataForSelectedNodeNotAvailable(node);
-                }
+        }
+        if (!found) {
+            if (eventResolverListener != null) {
+                eventResolverListener.onDataForSelectedNodeNotAvailable(node);
             }
+        }
+    }
+
+    private void notifyEventResolverListener(AccessibilityNodeInfoCompat nodeInfo, AccessibilityEvent event, String idGroupKey) {
+        List<ConfigurationItem> selectedConfigurationItems = configuration.getIdGroups().get(idGroupKey);
+        if (eventResolverListener != null) {
+            eventResolverListener.onDataForSelectedNodeAvailable(nodeInfo, event.getEventType(), selectedConfigurationItems);
         }
     }
 }

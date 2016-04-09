@@ -19,8 +19,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.hrs.filltheform.R;
 import com.hrs.filltheform.common.ConfigurationItem;
@@ -127,12 +127,12 @@ public class MyAccessibilityService extends android.accessibilityservice.Accessi
     }
 
     @Override
-    public void onDataForSelectedNodeAvailable(AccessibilityNodeInfo selectedNodeInfo, int accessibilityEventType, List<ConfigurationItem> selectedConfigurationItems) {
+    public void onDataForSelectedNodeAvailable(AccessibilityNodeInfoCompat selectedNodeInfo, int accessibilityEventType, List<ConfigurationItem> selectedConfigurationItems) {
         fillTheFormDialog.showDialog(selectedNodeInfo, accessibilityEventType, selectedConfigurationItems);
     }
 
     @Override
-    public void onDataForSelectedNodeNotAvailable(AccessibilityNodeInfo selectedNodeInfo) {
+    public void onDataForSelectedNodeNotAvailable(AccessibilityNodeInfoCompat selectedNodeInfo) {
         LogUtil.d(TAG, getString(R.string.values_not_found) + selectedNodeInfo.toString());
     }
 
