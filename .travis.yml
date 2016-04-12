@@ -1,5 +1,3 @@
-# reference: https://docs.travis-ci.com/user/languages/android
-
 language: android
 android:
   components:
@@ -8,6 +6,10 @@ android:
   - build-tools-23.0.2
   - android-23
   - extra-android-m2repository
-
 script:
-  - ./gradlew build
+- "./gradlew build"
+before_install:
+- openssl aes-256-cbc -K $encrypted_dfa994449d32_key -iv $encrypted_dfa994449d32_iv
+  -in release.keystore.enc -out release.keystore -d
+after_success:
+- ./deploy.sh
