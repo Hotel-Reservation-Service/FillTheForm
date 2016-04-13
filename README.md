@@ -6,6 +6,8 @@
 
 FillTheForm is an Android app that that helps you to develop and test your apps faster.
 
+[<img src="https://dply.me/eytf6e/button/large" alt="Try it on your device via DeployGate">](https://dply.me/eytf6e#install)
+
 Now you can fill out every EditText with just a long press!
 
 ![FillTheForm Teaser](http://imgur.com/4ck3K2g.gif "FillTheForm Teaser")

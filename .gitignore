@@ -16,3 +16,6 @@ Thumbs.db
 
 # OSX files
 .DS_Store
+
+# Keystore
+release.keystore

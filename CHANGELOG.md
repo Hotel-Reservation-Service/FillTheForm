@@ -1,5 +1,8 @@
 #Changelog
 
+## New version
+- Started using DeployGate to distribute latest develop build.
+
 ## v0.8.1
 - Fixed changing items on Pre-Lollipop devices #22.
 - AccessibilityNodeInfo replaced with AccessibilityNodeInfoCompat.
