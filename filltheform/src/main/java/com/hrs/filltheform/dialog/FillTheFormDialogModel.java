@@ -15,9 +15,14 @@
  */
 package com.hrs.filltheform.dialog;
 
+import android.support.annotation.IntDef;
+import android.support.annotation.VisibleForTesting;
+
 import com.hrs.filltheform.common.ConfigurationItem;
 import com.hrs.filltheform.common.PropertyChangedListener;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -31,33 +36,57 @@ import java.util.regex.Pattern;
  */
 class FillTheFormDialogModel {
 
-    public interface FillTheFormDialogModelHelper {
+    /**
+     * Model helper.
+     */
+    interface FillTheFormDialogModelHelper {
 
         boolean isConfigurationVariableKey(String variableKey);
 
         String getConfigurationVariableValue(String variableKey);
+
+        void clearConfigurationVariables();
     }
 
-    public static final String PROPERTY_EXPAND_ICON = "property_expand_icon";
-    public static final String PROPERTY_EXPAND_ICON_FAST_MODE = "property_expand_icon_fast_mode";
-    public static final String PROPERTY_CLOSE_BUTTON = "property_close_button";
-    public static final String PROPERTY_OPEN_FILL_THE_FORM_APP_BUTTON = "property_open_fill_the_form_app_button";
-    public static final String PROPERTY_MINIMIZE_BUTTON = "property_minimize_button";
-    public static final String PROPERTY_DIALOG_VISIBILITY = "property_dialog_visibility";
-    public static final String PROPERTY_DIALOG_EXPANDED = "property_dialog_expanded";
-    public static final String PROPERTY_DIALOG_POSITION = "property_dialog_position";
-    public static final String PROPERTY_DIALOG_INITIAL_POSITION = "property_dialog_initial_position";
-    public static final String PROPERTY_CONFIGURATION_ITEMS_LIST = "property_configuration_items_list";
-    public static final String PROPERTY_CLEAR_CONFIGURATION_VARIABLES = "property_clear_configuration_variables";
-    public static final String PROPERTY_FAST_MODE = "property_fast_mode";
-    public static final String PROPERTY_FAST_MODE_BUTTON = "property_fast_mode_button";
-    public static final String PROPERTY_ACTION_SET_TEXT = "property_action_set_text";
-    public static final String PROPERTY_ACTION_PASTE = "property_action_paste";
+    /**
+     * Action callbacks.
+     */
+    interface ActionCallbacks {
+
+        void openFillTheFormApp();
+
+        void setText(String text);
+
+        void pasteText(String text);
+
+        void saveFastModeState(boolean enabled);
+    }
+
+    /**
+     * Typedef annotation.
+     */
+    @IntDef({EVENT_TYPE_UNKNOWN,
+            EVENT_TYPE_VIEW_LONG_CLICKED,
+            EVENT_TYPE_VIEW_CLICKED,
+            EVENT_TYPE_VIEW_FOCUSED})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface EventType {
+    }
 
     public static final int EVENT_TYPE_UNKNOWN = 0;
     public static final int EVENT_TYPE_VIEW_LONG_CLICKED = 2;
     public static final int EVENT_TYPE_VIEW_CLICKED = 1;
     public static final int EVENT_TYPE_VIEW_FOCUSED = 8;
+
+    public static final String PROPERTY_EXPAND_ICON = "property_expand_icon";
+    public static final String PROPERTY_EXPAND_ICON_FAST_MODE = "property_expand_icon_fast_mode";
+    public static final String PROPERTY_DIALOG_VISIBILITY = "property_dialog_visibility";
+    public static final String PROPERTY_DIALOG_EXPANDED = "property_dialog_expanded";
+    public static final String PROPERTY_DIALOG_POSITION = "property_dialog_position";
+    public static final String PROPERTY_DIALOG_INITIAL_POSITION = "property_dialog_initial_position";
+    public static final String PROPERTY_FAST_MODE_BUTTON_ICON = "property_fast_mode_button_icon";
+    public static final String PROPERTY_DATA_SET = "property_data_set";
+    public static final String PROPERTY_DATA_SET_SCROLL_POSITION = "property_data_set_scroll_position";
 
     public static final int VIEW_TYPE_SELECTED_ITEM = 1;
     public static final int VIEW_TYPE_NORMAL_ITEM = 2;
@@ -66,6 +95,7 @@ class FillTheFormDialogModel {
 
     private PropertyChangedListener propertyChangedListener;
     private final FillTheFormDialogModelHelper helper;
+    private ActionCallbacks actionCallbacks;
 
     // Visibility and expanded status
     private boolean expandIconVisible = true;
@@ -108,19 +138,26 @@ class FillTheFormDialogModel {
         this.helper = helper;
     }
 
+    public void setActionCallbacks(ActionCallbacks actionCallbacks) {
+        this.actionCallbacks = actionCallbacks;
+    }
+
     // Select configuration item
 
     public void onConfigurationItemClicked(int position) {
         setSelectedConfigItem(position);
-        notifyPropertyChanged(PROPERTY_ACTION_SET_TEXT);
+        actionCallbacks.setText(getSelectedConfigItemValue());
+        notifyPropertyChanged(PROPERTY_DATA_SET);
     }
 
     public void onConfigurationItemLongClicked(int position) {
         setSelectedConfigItem(position);
-        notifyPropertyChanged(PROPERTY_ACTION_PASTE);
+        actionCallbacks.pasteText(getSelectedConfigItemValue());
+        notifyPropertyChanged(PROPERTY_DATA_SET);
     }
 
-    public String getSelectedConfigItemValue() {
+    @VisibleForTesting
+    String getSelectedConfigItemValue() {
         ConfigurationItem preparedConfigurationItem = prepareSelectedConfigurationItemForInput();
         if (preparedConfigurationItem != null) {
             return preparedConfigurationItem.getValue();
@@ -226,7 +263,7 @@ class FillTheFormDialogModel {
     }
 
     private ConfigurationItem prepareConfigurationItemForDialogList(ConfigurationItem configurationItem) {
-        if (helper != null && configurationItem != null && configurationItem.getValue() == null) {
+        if (configurationItem != null && configurationItem.getValue() == null) {
             if (configurationVariablePattern != null) {
                 String newConfigurationItemValue = replaceVariableKeysWithValues(configurationItem.getRawValue());
                 configurationItem.setValue(newConfigurationItemValue);
@@ -240,7 +277,7 @@ class FillTheFormDialogModel {
     private ConfigurationItem prepareSelectedConfigurationItemForInput() {
         if (selectedConfigItem != null) {
             // Check if the selected config item raw value is configuration variable key
-            if (helper != null && helper.isConfigurationVariableKey(selectedConfigItem.getRawValue())) {
+            if (helper.isConfigurationVariableKey(selectedConfigItem.getRawValue())) {
                 String configurationVariableValue = helper.getConfigurationVariableValue(selectedConfigItem.getRawValue());
                 if (configurationVariableValue != null) {
                     ConfigurationItem preparedConfigurationItem = new ConfigurationItem(selectedConfigItem);
@@ -398,23 +435,25 @@ class FillTheFormDialogModel {
 
     // Show dialog on screen
 
-    public void showDialog(int modelEventType, List<ConfigurationItem> selectedConfigurationItems) {
+    public void showDialog(@EventType int modelEventType, List<ConfigurationItem> selectedConfigurationItems) {
         if (isDialogVisible() && isFastModeEnabled() && modelEventType == EVENT_TYPE_VIEW_LONG_CLICKED) {
             return;
         } else if (!isDialogVisible() && (modelEventType == EVENT_TYPE_VIEW_CLICKED || modelEventType == EVENT_TYPE_VIEW_FOCUSED)) {
             return;
         }
-        notifyPropertyChanged(PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
+        helper.clearConfigurationVariables();
         setSortedConfigurationItems(selectedConfigurationItems);
         if (!isDialogVisible()) {
             setExpandIconVisible(true);
             setDialogVisible(true);
             notifyPropertyChanged(PROPERTY_DIALOG_INITIAL_POSITION);
         }
-        notifyPropertyChanged(PROPERTY_CONFIGURATION_ITEMS_LIST);
+        notifyPropertyChanged(PROPERTY_DATA_SET);
+        notifyPropertyChanged(PROPERTY_DATA_SET_SCROLL_POSITION);
         if (isFastModeEnabled() || modelEventType == EVENT_TYPE_VIEW_LONG_CLICKED) {
             setSelectedConfigItem(sortedConfigurationItems.get(0));
-            notifyPropertyChanged(PROPERTY_ACTION_SET_TEXT);
+            actionCallbacks.setText(getSelectedConfigItemValue());
+            notifyPropertyChanged(PROPERTY_DATA_SET);
         }
     }
 
@@ -451,7 +490,6 @@ class FillTheFormDialogModel {
         if (isDialogVisible()) {
             setDialogVisible(false);
             setDialogExpanded(false);
-            notifyPropertyChanged(PROPERTY_CLOSE_BUTTON);
         }
     }
 
@@ -459,7 +497,6 @@ class FillTheFormDialogModel {
 
     public void onMinimizeButtonClicked() {
         setDialogExpanded(false);
-        notifyPropertyChanged(PROPERTY_MINIMIZE_BUTTON);
     }
 
     // Open fill the form app button
@@ -467,7 +504,7 @@ class FillTheFormDialogModel {
     public void onOpenFillTheFormAppButtonClicked() {
         if (isDialogVisible()) {
             onCloseButtonClicked();
-            notifyPropertyChanged(PROPERTY_OPEN_FILL_THE_FORM_APP_BUTTON);
+            actionCallbacks.openFillTheFormApp();
         }
     }
 
@@ -493,9 +530,9 @@ class FillTheFormDialogModel {
         boolean saveFastModeToSharedPrefs = fastModeEnabled != enabled;
         this.fastModeEnabled = enabled;
         if (saveFastModeToSharedPrefs) {
-            notifyPropertyChanged(PROPERTY_FAST_MODE);
+            actionCallbacks.saveFastModeState(isFastModeEnabled());
         }
-        notifyPropertyChanged(PROPERTY_FAST_MODE_BUTTON);
+        notifyPropertyChanged(PROPERTY_FAST_MODE_BUTTON_ICON);
     }
 
     public boolean isFastModeEnabled() {

@@ -29,9 +29,12 @@ import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.spy;
 
 /**
  * Tests for FillTheFormDialogModel.
@@ -49,14 +52,18 @@ public class FillTheFormDialogModelTest {
     private static final int EXPANDED_DIALOG_HEIGHT_PX = 630;
 
     private PropertyChangedListener propertyChangedListener;
+    private FillTheFormDialogModel.ActionCallbacks actionCallbacks;
+    private FillTheFormDialogModel.FillTheFormDialogModelHelper helper;
     private FillTheFormDialogModel model;
 
     @Before
     public void setUp() throws Exception {
         propertyChangedListener = mock(PropertyChangedListener.class);
-        FillTheFormDialogModel.FillTheFormDialogModelHelper helper = createModelHelper();
+        actionCallbacks = mock(FillTheFormDialogModel.ActionCallbacks.class);
+        helper = spy(createModelHelper());
         model = new FillTheFormDialogModel(helper);
         model.setPropertyChangedListener(propertyChangedListener);
+        model.setActionCallbacks(actionCallbacks);
 
         // Set dialog dimensions
         model.setNormalDialogDimensions(NORMAL_DIALOG_WIDTH_PX, NORMAL_DIALOG_HEIGHT_PX);
@@ -111,6 +118,11 @@ public class FillTheFormDialogModelTest {
                         return null;
                 }
             }
+
+            @Override
+            public void clearConfigurationVariables() {
+                // Do nothing
+            }
         };
     }
 
@@ -138,12 +150,13 @@ public class FillTheFormDialogModelTest {
         assertTrue(model.isDialogVisible());
         assertEquals(selectedConfigurationItems, model.getSortedConfigurationItems());
         assertEquals(5, model.getItemsCount());
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
+        verify(helper, times(1)).clearConfigurationVariables();
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET_SCROLL_POSITION);
         assertEquals(selectedConfigurationItems.get(0).getRawValue(), model.getSelectedConfigItemValue());
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(actionCallbacks, times(1)).setText(anyString());
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
 
         // verify - values
         assertEquals("Ivan", model.getConfigurationItem(0).getValue());
@@ -172,12 +185,13 @@ public class FillTheFormDialogModelTest {
         // verify
         assertTrue(model.isDialogVisible());
         assertEquals(selectedConfigurationItems.get(0).getRawValue(), model.getSelectedConfigItemValue());
-        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
-        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(helper, times(2)).clearConfigurationVariables();
+        verify(actionCallbacks, times(2)).setText(anyString());
+        verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON_FAST_MODE);
-        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET_SCROLL_POSITION);
 
         // verify - values
         assertEquals("Ivan", model.getConfigurationItem(0).getValue());
@@ -208,12 +222,13 @@ public class FillTheFormDialogModelTest {
         // verify
         assertTrue(model.isDialogVisible());
         assertEquals("Max", model.getSelectedConfigItemValue());
-        verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
-        verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(helper, times(3)).clearConfigurationVariables();
+        verify(actionCallbacks, times(4)).setText(anyString());
+        verify(propertyChangedListener, times(7)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON_FAST_MODE);
-        verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
+        verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET_SCROLL_POSITION);
 
         // verify - values
         assertEquals("Max", model.getConfigurationItem(0).getValue());
@@ -245,12 +260,13 @@ public class FillTheFormDialogModelTest {
         // verify
         assertTrue(model.isDialogVisible());
         assertEquals("Max", model.getSelectedConfigItemValue());
-        verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
-        verify(propertyChangedListener, times(5)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(helper, times(4)).clearConfigurationVariables();
+        verify(actionCallbacks, times(5)).setText(anyString());
+        verify(propertyChangedListener, times(9)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON_FAST_MODE);
-        verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
+        verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET_SCROLL_POSITION);
 
         // verify - values
         assertEquals("Max", model.getConfigurationItem(0).getValue());
@@ -280,12 +296,13 @@ public class FillTheFormDialogModelTest {
         assertTrue(model.isDialogVisible());
         assertEquals(selectedConfigurationItems, model.getSortedConfigurationItems());
         assertEquals(5, model.getItemsCount());
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
+        verify(helper, times(1)).clearConfigurationVariables();
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET_SCROLL_POSITION);
         assertEquals(selectedConfigurationItems.get(0).getRawValue(), model.getSelectedConfigItemValue());
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(actionCallbacks, times(1)).setText(anyString());
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
 
         // verify - values
         assertEquals("Ivan", model.getConfigurationItem(0).getValue());
@@ -315,12 +332,13 @@ public class FillTheFormDialogModelTest {
         assertTrue(model.isDialogVisible());
         assertEquals(selectedConfigurationItems, model.getSortedConfigurationItems());
         assertEquals(5, model.getItemsCount());
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
+        verify(helper, times(1)).clearConfigurationVariables();
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET_SCROLL_POSITION);
         assertEquals(selectedConfigurationItems.get(0).getRawValue(), model.getSelectedConfigItemValue());
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(actionCallbacks, times(1)).setText(anyString());
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
 
         // verify - values
         assertEquals("Ivan", model.getConfigurationItem(0).getValue());
@@ -385,7 +403,8 @@ public class FillTheFormDialogModelTest {
         model.onConfigurationItemClicked(0);
 
         // verify
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(actionCallbacks, times(1)).setText(anyString());
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
         assertEquals(null, model.getSelectedConfigItemValue());
     }
 
@@ -399,7 +418,8 @@ public class FillTheFormDialogModelTest {
         model.onConfigurationItemClicked(2);
 
         // verify
-        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(actionCallbacks, times(2)).setText(anyString());
+        verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
         assertEquals(model.getConfigurationItem(2).getValue(), model.getSelectedConfigItemValue());
     }
 
@@ -409,7 +429,8 @@ public class FillTheFormDialogModelTest {
         model.onConfigurationItemLongClicked(0);
 
         // verify
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_PASTE);
+        verify(actionCallbacks, times(1)).pasteText(anyString());
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
         assertEquals(null, model.getSelectedConfigItemValue());
     }
 
@@ -423,8 +444,8 @@ public class FillTheFormDialogModelTest {
         model.onConfigurationItemLongClicked(2);
 
         // verify
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_PASTE);
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_PASTE);
+        verify(actionCallbacks, times(1)).setText(anyString());
+        verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
         assertEquals(model.getConfigurationItem(2).getValue(), model.getSelectedConfigItemValue());
     }
 
@@ -441,7 +462,12 @@ public class FillTheFormDialogModelTest {
     public void testGetSelectedConfigItemValueShouldReturnValue() throws Exception {
         // prepare
         List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+
+        // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
+
+        // verify
+        verify(actionCallbacks, times(1)).setText(eq("Ivan"));
 
         // run
         String value = model.getSelectedConfigItemValue();
@@ -458,10 +484,9 @@ public class FillTheFormDialogModelTest {
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
-        String value = model.getSelectedConfigItemValue();
 
         // verify
-        assertEquals("Luke", value);
+        verify(actionCallbacks, times(1)).setText(eq("Luke"));
     }
 
     @Test
@@ -539,22 +564,19 @@ public class FillTheFormDialogModelTest {
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
-        String editTextContent = model.getSelectedConfigItemValue();
-        assertEquals("Luke", editTextContent);
+        verify(actionCallbacks, times(1)).setText(eq("Luke"));
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
-        editTextContent = model.getSelectedConfigItemValue();
-        assertEquals("Peter", editTextContent);
+        verify(actionCallbacks, times(1)).setText(eq("Peter"));
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
-        editTextContent = model.getSelectedConfigItemValue();
-        assertEquals("Luke", editTextContent);
+        verify(actionCallbacks, times(2)).setText(eq("Luke"));
     }
 
     @Test
@@ -568,8 +590,7 @@ public class FillTheFormDialogModelTest {
         model.getConfigurationItem(0);
 
         // verify
-        String editTextContent = model.getSelectedConfigItemValue();
-        assertEquals("Luke", editTextContent);
+        verify(actionCallbacks, times(1)).setText(eq("Luke"));
         String dialogListSelectedItem = model.getConfigurationItem(0).getValue();
         assertEquals("random_first_name", dialogListSelectedItem);
 
@@ -577,8 +598,7 @@ public class FillTheFormDialogModelTest {
         model.onConfigurationItemClicked(0);
 
         // verify
-        editTextContent = model.getSelectedConfigItemValue();
-        assertEquals("Peter", editTextContent);
+        verify(actionCallbacks, times(1)).setText(eq("Peter"));
         dialogListSelectedItem = model.getConfigurationItem(0).getValue();
         assertEquals("random_first_name", dialogListSelectedItem);
 
@@ -586,8 +606,7 @@ public class FillTheFormDialogModelTest {
         model.onConfigurationItemClicked(0);
 
         // verify
-        editTextContent = model.getSelectedConfigItemValue();
-        assertEquals("Luke", editTextContent);
+        verify(actionCallbacks, times(2)).setText(eq("Luke"));
         dialogListSelectedItem = model.getConfigurationItem(0).getValue();
         assertEquals("random_first_name", dialogListSelectedItem);
     }
@@ -603,8 +622,7 @@ public class FillTheFormDialogModelTest {
         model.getConfigurationItem(0);
 
         // verify
-        String editTextContent = model.getSelectedConfigItemValue();
-        assertEquals("Luke has Nexus 42", editTextContent);
+        verify(actionCallbacks, times(1)).setText(eq("Luke has Nexus 42"));
         String dialogListSelectedItem = model.getConfigurationItem(0).getValue();
         assertEquals("Peter has Nexus 9", dialogListSelectedItem);
 
@@ -612,8 +630,7 @@ public class FillTheFormDialogModelTest {
         model.onConfigurationItemClicked(0);
 
         // verify
-        editTextContent = model.getSelectedConfigItemValue();
-        assertEquals("Peter has Nexus 9", editTextContent);
+        verify(actionCallbacks, times(1)).setText(eq("Peter has Nexus 9"));
         dialogListSelectedItem = model.getConfigurationItem(0).getValue();
         assertEquals("Luke has Nexus 42", dialogListSelectedItem);
 
@@ -621,8 +638,7 @@ public class FillTheFormDialogModelTest {
         model.onConfigurationItemClicked(0);
 
         // verify
-        editTextContent = model.getSelectedConfigItemValue();
-        assertEquals("Luke has Nexus 42", editTextContent);
+        verify(actionCallbacks, times(2)).setText(eq("Luke has Nexus 42"));
         dialogListSelectedItem = model.getConfigurationItem(0).getValue();
         assertEquals("Peter has Nexus 9", dialogListSelectedItem);
     }
@@ -646,24 +662,25 @@ public class FillTheFormDialogModelTest {
 
         // verify
         assertTrue(model.isFastModeEnabled());
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_FAST_MODE);
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_FAST_MODE_BUTTON);
+        verify(actionCallbacks, times(1)).saveFastModeState(true);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_FAST_MODE_BUTTON_ICON);
 
         // run
         model.setFastModeEnabled(true);
 
         // verify
         assertTrue(model.isFastModeEnabled());
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_FAST_MODE);
-        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_FAST_MODE_BUTTON);
+        verify(actionCallbacks, times(1)).saveFastModeState(true);
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_FAST_MODE_BUTTON_ICON);
 
         // run
         model.setFastModeEnabled(false);
 
         // verify
         assertFalse(model.isFastModeEnabled());
-        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_FAST_MODE);
-        verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_FAST_MODE_BUTTON);
+        verify(actionCallbacks, times(1)).saveFastModeState(true);
+        verify(actionCallbacks, times(1)).saveFastModeState(false);
+        verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_FAST_MODE_BUTTON_ICON);
     }
 
     @Test
@@ -677,13 +694,14 @@ public class FillTheFormDialogModelTest {
         // verify
         assertFalse(model.isDialogVisible());
         assertFalse(model.isDialogExpanded());
-        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
+        verify(helper, times(0)).clearConfigurationVariables();
         verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
         verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON_FAST_MODE);
         verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_VISIBILITY);
         verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
-        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
-        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET_SCROLL_POSITION);
+        verify(actionCallbacks, times(0)).setText(anyString());
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_FOCUSED, selectedConfigurationItems);
@@ -691,13 +709,14 @@ public class FillTheFormDialogModelTest {
         // verify
         assertFalse(model.isDialogVisible());
         assertFalse(model.isDialogExpanded());
-        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
+        verify(helper, times(0)).clearConfigurationVariables();
         verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
         verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON_FAST_MODE);
         verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_VISIBILITY);
         verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
-        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
-        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET_SCROLL_POSITION);
+        verify(actionCallbacks, times(0)).setText(anyString());
+        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
     }
 
     @Test
@@ -711,13 +730,14 @@ public class FillTheFormDialogModelTest {
         // verify
         assertTrue(model.isDialogVisible());
         assertFalse(model.isDialogExpanded());
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
+        verify(helper, times(1)).clearConfigurationVariables();
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON_FAST_MODE);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_VISIBILITY);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET_SCROLL_POSITION);
+        verify(actionCallbacks, times(1)).setText(anyString());
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
 
         // prepare
         model.setFastModeEnabled(true);
@@ -728,13 +748,14 @@ public class FillTheFormDialogModelTest {
         // verify
         assertTrue(model.isDialogVisible());
         assertFalse(model.isDialogExpanded());
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLEAR_CONFIGURATION_VARIABLES);
+        verify(helper, times(1)).clearConfigurationVariables();
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON_FAST_MODE);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_VISIBILITY);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CONFIGURATION_ITEMS_LIST);
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET_SCROLL_POSITION);
+        verify(actionCallbacks, times(1)).setText(anyString());
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
     }
 
     @Test
@@ -746,13 +767,15 @@ public class FillTheFormDialogModelTest {
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(actionCallbacks, times(1)).setText(anyString());
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
-        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(actionCallbacks, times(2)).setText(anyString());
+        verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
     }
 
     @Test
@@ -765,13 +788,15 @@ public class FillTheFormDialogModelTest {
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(actionCallbacks, times(1)).setText(anyString());
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(actionCallbacks, times(1)).setText(anyString());
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
     }
 
     @Test
@@ -783,19 +808,22 @@ public class FillTheFormDialogModelTest {
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(actionCallbacks, times(1)).setText(anyString());
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_CLICKED, selectedConfigurationItems);
 
         // verify
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(actionCallbacks, times(1)).setText(anyString());
+        verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_FOCUSED, selectedConfigurationItems);
 
         // verify
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(actionCallbacks, times(1)).setText(anyString());
+        verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
     }
 
     @Test
@@ -808,19 +836,22 @@ public class FillTheFormDialogModelTest {
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // verify
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(actionCallbacks, times(1)).setText(anyString());
+        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_CLICKED, selectedConfigurationItems);
 
         // verify
-        verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(actionCallbacks, times(2)).setText(anyString());
+        verify(propertyChangedListener, times(4)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_FOCUSED, selectedConfigurationItems);
 
         // verify
-        verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_ACTION_SET_TEXT);
+        verify(actionCallbacks, times(3)).setText(anyString());
+        verify(propertyChangedListener, times(6)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
     }
 
     @Test
@@ -831,7 +862,6 @@ public class FillTheFormDialogModelTest {
         // verify
         assertFalse(model.isDialogVisible());
         assertFalse(model.isDialogExpanded());
-        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLOSE_BUTTON);
     }
 
     @Test
@@ -846,7 +876,6 @@ public class FillTheFormDialogModelTest {
         // verify
         assertFalse(model.isDialogVisible());
         assertFalse(model.isDialogExpanded());
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLOSE_BUTTON);
     }
 
     // Dialog position
@@ -1061,7 +1090,6 @@ public class FillTheFormDialogModelTest {
         // verify
         assertFalse(model.isDialogVisible());
         assertFalse(model.isDialogExpanded());
-        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLOSE_BUTTON);
     }
 
     @Test
@@ -1076,7 +1104,6 @@ public class FillTheFormDialogModelTest {
         // verify
         assertFalse(model.isDialogVisible());
         assertFalse(model.isDialogExpanded());
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLOSE_BUTTON);
     }
 
     @Test
@@ -1086,7 +1113,6 @@ public class FillTheFormDialogModelTest {
 
         // verify
         assertFalse(model.isDialogExpanded());
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_MINIMIZE_BUTTON);
     }
 
     @Test
@@ -1096,8 +1122,7 @@ public class FillTheFormDialogModelTest {
         // verify
         assertFalse(model.isDialogVisible());
         assertFalse(model.isDialogExpanded());
-        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLOSE_BUTTON);
-        verify(propertyChangedListener, times(0)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_OPEN_FILL_THE_FORM_APP_BUTTON);
+        verify(actionCallbacks, times(0)).openFillTheFormApp();
     }
 
     @Test
@@ -1112,8 +1137,7 @@ public class FillTheFormDialogModelTest {
         // verify
         assertFalse(model.isDialogVisible());
         assertFalse(model.isDialogExpanded());
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_CLOSE_BUTTON);
-        verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_OPEN_FILL_THE_FORM_APP_BUTTON);
+        verify(actionCallbacks, times(1)).openFillTheFormApp();
     }
 
     @Test
