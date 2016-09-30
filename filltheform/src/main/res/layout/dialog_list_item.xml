@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2015 HRS GmbH
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2015 HRS GmbH
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -17,21 +16,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="@dimen/dialog_menu_item_padding">
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/value"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/DialogListItemNormal"
-        tools:text="Action name" />
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="@dimen/dialog_menu_item_padding">
 
-    <TextView
-        android:id="@+id/profile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/DialogListItemProfile"
-        tools:text="Profile name" />
+        <TextView
+            android:id="@+id/value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/DialogListItemNormal"
+            tools:text="Action name" />
+
+        <TextView
+            android:id="@+id/profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/DialogListItemProfile"
+            tools:text="Profile name" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/remove_item_button"
+        style="@style/DialogToolbarItem"
+        android:layout_width="@dimen/dialog_menu_button_width_height"
+        android:layout_height="@dimen/dialog_menu_button_width_height"
+        android:contentDescription="@string/app_name"
+        android:src="@android:drawable/ic_delete"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
 </LinearLayout>

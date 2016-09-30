@@ -21,6 +21,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.hrs.filltheform.R;
@@ -46,7 +47,7 @@ public class ConfigurationItemsAdapter extends RecyclerView.Adapter<Configuratio
 
         int textViewStyle = R.style.DialogListItemNormal;
 
-        if (viewType == FillTheFormDialogModel.VIEW_TYPE_SELECTED_ITEM) {
+        if ((viewType & FillTheFormDialogModel.VIEW_TYPE_SELECTED_ITEM) == FillTheFormDialogModel.VIEW_TYPE_SELECTED_ITEM) {
             textViewStyle = R.style.DialogListItemPressed;
         }
 
@@ -57,11 +58,17 @@ public class ConfigurationItemsAdapter extends RecyclerView.Adapter<Configuratio
             viewHolder.valueTextView.setTextAppearance(context, textViewStyle);
         }
 
+        if ((viewType & FillTheFormDialogModel.VIEW_TYPE_REMOVABLE_ITEM) == FillTheFormDialogModel.VIEW_TYPE_REMOVABLE_ITEM) {
+            viewHolder.removeItemButton.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.removeItemButton.setVisibility(View.GONE);
+        }
+
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(final ViewHolder viewHolder, int position) {
         ConfigurationItem configurationItem = model.getConfigurationItem(position);
 
         if (configurationItem != null) {
@@ -76,15 +83,22 @@ public class ConfigurationItemsAdapter extends RecyclerView.Adapter<Configuratio
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    model.onConfigurationItemClicked(position);
+                    model.onConfigurationItemClicked(viewHolder.getAdapterPosition());
                 }
             });
 
             viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    model.onConfigurationItemLongClicked(position);
+                    model.onConfigurationItemLongClicked(viewHolder.getAdapterPosition());
                     return true;
+                }
+            });
+
+            viewHolder.removeItemButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    model.onRemoveItemButtonClicked(viewHolder.getAdapterPosition());
                 }
             });
         }
@@ -107,13 +121,15 @@ public class ConfigurationItemsAdapter extends RecyclerView.Adapter<Configuratio
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public final TextView valueTextView;
-        public final TextView profileTextView;
+        final TextView valueTextView;
+        final TextView profileTextView;
+        final ImageButton removeItemButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
             this.valueTextView = (TextView) itemView.findViewById(R.id.value);
             this.profileTextView = (TextView) itemView.findViewById(R.id.profile);
+            this.removeItemButton = (ImageButton) itemView.findViewById(R.id.remove_item_button);
         }
     }
 }

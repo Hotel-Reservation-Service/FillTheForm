@@ -126,10 +126,16 @@ public class FillTheFormDialogModelTest {
         };
     }
 
-    private List<ConfigurationItem> createSelectedConfigurationItems() {
+    private List<ConfigurationItem> createSelectedConfigurationItemsForFirstName() {
         List<ConfigurationItem> selectedConfigurationItems = new ArrayList<>();
         selectedConfigurationItems.add(new ConfigurationItem("first_name", "myprofile", "Ivan"));
         selectedConfigurationItems.add(new ConfigurationItem("first_name", "other_profile", "Max"));
+        selectedConfigurationItems.add(new ConfigurationItem("first_name", "myprofile", "Peter"));
+        return selectedConfigurationItems;
+    }
+
+    private List<ConfigurationItem> createSelectedConfigurationItemsForLastName() {
+        List<ConfigurationItem> selectedConfigurationItems = new ArrayList<>();
         selectedConfigurationItems.add(new ConfigurationItem("last_name", "other_profile", "Mustermann"));
         selectedConfigurationItems.add(new ConfigurationItem("last_name", "myprofile", "Jukic"));
         ConfigurationItem configurationItem = new ConfigurationItem("last_name", "myprofile", "I have &device_model;\nfrom &device_manufacturer;");
@@ -141,7 +147,7 @@ public class FillTheFormDialogModelTest {
     @Test
     public void testShowDialogWhenSelectedConfigItemIsNull() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
@@ -149,7 +155,7 @@ public class FillTheFormDialogModelTest {
         // verify
         assertTrue(model.isDialogVisible());
         assertEquals(selectedConfigurationItems, model.getSortedConfigurationItems());
-        assertEquals(5, model.getItemsCount());
+        assertEquals(3, model.getItemsCount());
         verify(helper, times(1)).clearConfigurationVariables();
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
@@ -161,22 +167,18 @@ public class FillTheFormDialogModelTest {
         // verify - values
         assertEquals("Ivan", model.getConfigurationItem(0).getValue());
         assertEquals("Max", model.getConfigurationItem(1).getValue());
-        assertEquals("Mustermann", model.getConfigurationItem(2).getValue());
-        assertEquals("Jukic", model.getConfigurationItem(3).getValue());
-        assertEquals("I have Nexus 42\nfrom Google", model.getConfigurationItem(4).getValue());
+        assertEquals("Peter", model.getConfigurationItem(2).getValue());
 
         // verify - labels
-        assertEquals("Ivan", model.getConfigurationItem(0).getLabel());
-        assertEquals("Max", model.getConfigurationItem(1).getLabel());
-        assertEquals("Mustermann", model.getConfigurationItem(2).getLabel());
-        assertEquals("Jukic", model.getConfigurationItem(3).getLabel());
-        assertEquals("My Device", model.getConfigurationItem(4).getLabel());
+        assertEquals("Ivan", model.getConfigurationItem(0).getValue());
+        assertEquals("Max", model.getConfigurationItem(1).getValue());
+        assertEquals("Peter", model.getConfigurationItem(2).getValue());
     }
 
     @Test
     public void testShowDialogWhenSelectedConfigItemIsNotNull() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // run
@@ -195,26 +197,22 @@ public class FillTheFormDialogModelTest {
 
         // verify - values
         assertEquals("Ivan", model.getConfigurationItem(0).getValue());
-        assertEquals("Jukic", model.getConfigurationItem(1).getValue());
-        assertEquals("I have Nexus 42\nfrom Google", model.getConfigurationItem(2).getValue());
-        assertEquals("Max", model.getConfigurationItem(3).getValue());
-        assertEquals("Mustermann", model.getConfigurationItem(4).getValue());
+        assertEquals("Peter", model.getConfigurationItem(1).getValue());
+        assertEquals("Max", model.getConfigurationItem(2).getValue());
 
         // verify - labels
         assertEquals("Ivan", model.getConfigurationItem(0).getLabel());
-        assertEquals("Jukic", model.getConfigurationItem(1).getLabel());
-        assertEquals("My Device", model.getConfigurationItem(2).getLabel());
-        assertEquals("Max", model.getConfigurationItem(3).getLabel());
-        assertEquals("Mustermann", model.getConfigurationItem(4).getLabel());
+        assertEquals("Peter", model.getConfigurationItem(1).getLabel());
+        assertEquals("Max", model.getConfigurationItem(2).getLabel());
     }
 
     @Test
     public void testShowDialogWhenSelectedConfigItemIsNotTheFirstItemFromTheList() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
-        model.onConfigurationItemClicked(3);
+        model.onConfigurationItemClicked(2);
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
@@ -232,26 +230,22 @@ public class FillTheFormDialogModelTest {
 
         // verify - values
         assertEquals("Max", model.getConfigurationItem(0).getValue());
-        assertEquals("Mustermann", model.getConfigurationItem(1).getValue());
-        assertEquals("Ivan", model.getConfigurationItem(2).getValue());
-        assertEquals("Jukic", model.getConfigurationItem(3).getValue());
-        assertEquals("I have Nexus 42\nfrom Google", model.getConfigurationItem(4).getValue());
+        assertEquals("Ivan", model.getConfigurationItem(1).getValue());
+        assertEquals("Peter", model.getConfigurationItem(2).getValue());
 
         // verify - labels
-        assertEquals("Max", model.getConfigurationItem(0).getLabel());
-        assertEquals("Mustermann", model.getConfigurationItem(1).getLabel());
-        assertEquals("Ivan", model.getConfigurationItem(2).getLabel());
-        assertEquals("Jukic", model.getConfigurationItem(3).getLabel());
-        assertEquals("My Device", model.getConfigurationItem(4).getLabel());
+        assertEquals("Max", model.getConfigurationItem(0).getValue());
+        assertEquals("Ivan", model.getConfigurationItem(1).getValue());
+        assertEquals("Peter", model.getConfigurationItem(2).getValue());
     }
 
     @Test
     public void testShowDialogShouldKeepTheLastSelectedItemOnTop() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
-        model.onConfigurationItemClicked(3);
+        model.onConfigurationItemClicked(2);
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // run
@@ -270,23 +264,19 @@ public class FillTheFormDialogModelTest {
 
         // verify - values
         assertEquals("Max", model.getConfigurationItem(0).getValue());
-        assertEquals("Mustermann", model.getConfigurationItem(1).getValue());
-        assertEquals("Ivan", model.getConfigurationItem(2).getValue());
-        assertEquals("Jukic", model.getConfigurationItem(3).getValue());
-        assertEquals("I have Nexus 42\nfrom Google", model.getConfigurationItem(4).getValue());
+        assertEquals("Ivan", model.getConfigurationItem(1).getValue());
+        assertEquals("Peter", model.getConfigurationItem(2).getValue());
 
         // verify - labels
-        assertEquals("Max", model.getConfigurationItem(0).getLabel());
-        assertEquals("Mustermann", model.getConfigurationItem(1).getLabel());
-        assertEquals("Ivan", model.getConfigurationItem(2).getLabel());
-        assertEquals("Jukic", model.getConfigurationItem(3).getLabel());
-        assertEquals("My Device", model.getConfigurationItem(4).getLabel());
+        assertEquals("Max", model.getConfigurationItem(0).getValue());
+        assertEquals("Ivan", model.getConfigurationItem(1).getValue());
+        assertEquals("Peter", model.getConfigurationItem(2).getValue());
     }
 
     @Test
     public void testWhenConfigurationVariablePatternIsNull() {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForLastName();
         model.setConfigurationVariablePattern(null);
 
         // run
@@ -295,7 +285,7 @@ public class FillTheFormDialogModelTest {
         // verify
         assertTrue(model.isDialogVisible());
         assertEquals(selectedConfigurationItems, model.getSortedConfigurationItems());
-        assertEquals(5, model.getItemsCount());
+        assertEquals(3, model.getItemsCount());
         verify(helper, times(1)).clearConfigurationVariables();
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
@@ -305,24 +295,20 @@ public class FillTheFormDialogModelTest {
         verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
 
         // verify - values
-        assertEquals("Ivan", model.getConfigurationItem(0).getValue());
-        assertEquals("Max", model.getConfigurationItem(1).getValue());
-        assertEquals("Mustermann", model.getConfigurationItem(2).getValue());
-        assertEquals("Jukic", model.getConfigurationItem(3).getValue());
-        assertEquals("I have &device_model;\nfrom &device_manufacturer;", model.getConfigurationItem(4).getValue());
+        assertEquals("Mustermann", model.getConfigurationItem(0).getValue());
+        assertEquals("Jukic", model.getConfigurationItem(1).getValue());
+        assertEquals("I have &device_model;\nfrom &device_manufacturer;", model.getConfigurationItem(2).getValue());
 
         // verify - labels
-        assertEquals("Ivan", model.getConfigurationItem(0).getLabel());
-        assertEquals("Max", model.getConfigurationItem(1).getLabel());
-        assertEquals("Mustermann", model.getConfigurationItem(2).getLabel());
-        assertEquals("Jukic", model.getConfigurationItem(3).getLabel());
-        assertEquals("My Device", model.getConfigurationItem(4).getLabel());
+        assertEquals("Mustermann", model.getConfigurationItem(0).getLabel());
+        assertEquals("Jukic", model.getConfigurationItem(1).getLabel());
+        assertEquals("My Device", model.getConfigurationItem(2).getLabel());
     }
 
     @Test
     public void testWhenConfigurationVariablePatternIsEmptyString() {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForLastName();
         model.setConfigurationVariablePattern("");
 
         // run
@@ -331,7 +317,7 @@ public class FillTheFormDialogModelTest {
         // verify
         assertTrue(model.isDialogVisible());
         assertEquals(selectedConfigurationItems, model.getSortedConfigurationItems());
-        assertEquals(5, model.getItemsCount());
+        assertEquals(3, model.getItemsCount());
         verify(helper, times(1)).clearConfigurationVariables();
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DIALOG_INITIAL_POSITION);
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
@@ -341,24 +327,20 @@ public class FillTheFormDialogModelTest {
         verify(propertyChangedListener, times(2)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
 
         // verify - values
-        assertEquals("Ivan", model.getConfigurationItem(0).getValue());
-        assertEquals("Max", model.getConfigurationItem(1).getValue());
-        assertEquals("Mustermann", model.getConfigurationItem(2).getValue());
-        assertEquals("Jukic", model.getConfigurationItem(3).getValue());
-        assertEquals("I have &device_model;\nfrom &device_manufacturer;", model.getConfigurationItem(4).getValue());
+        assertEquals("Mustermann", model.getConfigurationItem(0).getValue());
+        assertEquals("Jukic", model.getConfigurationItem(1).getValue());
+        assertEquals("I have &device_model;\nfrom &device_manufacturer;", model.getConfigurationItem(2).getValue());
 
         // verify - labels
-        assertEquals("Ivan", model.getConfigurationItem(0).getLabel());
-        assertEquals("Max", model.getConfigurationItem(1).getLabel());
-        assertEquals("Mustermann", model.getConfigurationItem(2).getLabel());
-        assertEquals("Jukic", model.getConfigurationItem(3).getLabel());
-        assertEquals("My Device", model.getConfigurationItem(4).getLabel());
+        assertEquals("Mustermann", model.getConfigurationItem(0).getLabel());
+        assertEquals("Jukic", model.getConfigurationItem(1).getLabel());
+        assertEquals("My Device", model.getConfigurationItem(2).getLabel());
     }
 
     @Test
     public void testNextProfileShouldBeUsedWhenNextEditTextIsSelected() {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
         selectedConfigurationItems.add(new ConfigurationItem("view_id", "generic_profile", "Generic data"));
         List<String> profiles = new ArrayList<>();
         profiles.add("myprofile");
@@ -411,7 +393,7 @@ public class FillTheFormDialogModelTest {
     @Test
     public void testOnConfigurationItemClickedWhenSelectedConfigItemIsNotNull() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // run
@@ -437,7 +419,7 @@ public class FillTheFormDialogModelTest {
     @Test
     public void testOnConfigurationItemLongClickedWhenSelectedConfigItemIsNotNull() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
 
         // run
@@ -447,6 +429,27 @@ public class FillTheFormDialogModelTest {
         verify(actionCallbacks, times(1)).setText(anyString());
         verify(propertyChangedListener, times(3)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
         assertEquals(model.getConfigurationItem(2).getValue(), model.getSelectedConfigItemValue());
+    }
+
+    @Test
+    public void testOnRemoveItemButtonClicked() throws Exception {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItemsForFirstName = createSelectedConfigurationItemsForFirstName();
+        selectedConfigurationItemsForFirstName.get(2).rememberLastEntryForId("last_name");
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItemsForFirstName);
+        model.onConfigurationItemClicked(2);
+        List<ConfigurationItem> selectedConfigurationItemsForLastName = createSelectedConfigurationItemsForLastName();
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItemsForLastName);
+
+        // verify
+        assertEquals(selectedConfigurationItemsForLastName.size() + 1, model.getSortedConfigurationItems().size());
+
+        // run
+        model.onRemoveItemButtonClicked(0);
+
+        // verify
+        assertEquals(selectedConfigurationItemsForLastName.size(), model.getSortedConfigurationItems().size());
+        verify(propertyChangedListener, times(6)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_DATA_SET);
     }
 
     @Test
@@ -461,7 +464,7 @@ public class FillTheFormDialogModelTest {
     @Test
     public void testGetSelectedConfigItemValueShouldReturnValue() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
@@ -517,7 +520,7 @@ public class FillTheFormDialogModelTest {
         // prepare
         List<ConfigurationItem> selectedConfigurationItems = new ArrayList<>();
         selectedConfigurationItems.add(new ConfigurationItem("first_name", "myprofile", "random_first_name"));
-        selectedConfigurationItems.add(new ConfigurationItem("last_name", "myprofile", "random_last_name"));
+        selectedConfigurationItems.add(new ConfigurationItem("first_name", "myprofile", "Peter"));
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
@@ -528,11 +531,28 @@ public class FillTheFormDialogModelTest {
     }
 
     @Test
+    public void testGetSortedConfigItemTypeShouldReturnViewTypeNormalAndRemovable() throws Exception {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = new ArrayList<>();
+        selectedConfigurationItems.add(new ConfigurationItem("first_name", "myprofile", "random_first_name"));
+        selectedConfigurationItems.add(new ConfigurationItem("first_name", "myprofile", "Peter"));
+        selectedConfigurationItems.get(1).setLastEntryItem(true);
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
+        int viewType = model.getSortedConfigItemType(1);
+
+        // verify
+        assertEquals(FillTheFormDialogModel.VIEW_TYPE_NORMAL_ITEM, viewType & FillTheFormDialogModel.VIEW_TYPE_NORMAL_ITEM);
+        assertEquals(FillTheFormDialogModel.VIEW_TYPE_REMOVABLE_ITEM, viewType & FillTheFormDialogModel.VIEW_TYPE_REMOVABLE_ITEM);
+    }
+
+    @Test
     public void testGetSortedConfigItemTypeShouldReturnViewTypeSelected() throws Exception {
         // prepare
         List<ConfigurationItem> selectedConfigurationItems = new ArrayList<>();
         selectedConfigurationItems.add(new ConfigurationItem("first_name", "myprofile", "random_first_name"));
-        selectedConfigurationItems.add(new ConfigurationItem("last_name", "myprofile", "random_last_name"));
+        selectedConfigurationItems.add(new ConfigurationItem("first_name", "myprofile", "Peter"));
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
@@ -543,9 +563,26 @@ public class FillTheFormDialogModelTest {
     }
 
     @Test
+    public void testGetSortedConfigItemTypeShouldReturnViewTypeSelectedAndRemovable() throws Exception {
+        // prepare
+        List<ConfigurationItem> selectedConfigurationItems = new ArrayList<>();
+        selectedConfigurationItems.add(new ConfigurationItem("first_name", "myprofile", "random_first_name"));
+        selectedConfigurationItems.add(new ConfigurationItem("first_name", "myprofile", "Peter"));
+        selectedConfigurationItems.get(0).setLastEntryItem(true);
+
+        // run
+        model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
+        int viewType = model.getSortedConfigItemType(0);
+
+        // verify
+        assertEquals(FillTheFormDialogModel.VIEW_TYPE_SELECTED_ITEM, viewType & FillTheFormDialogModel.VIEW_TYPE_SELECTED_ITEM);
+        assertEquals(FillTheFormDialogModel.VIEW_TYPE_REMOVABLE_ITEM, viewType & FillTheFormDialogModel.VIEW_TYPE_REMOVABLE_ITEM);
+    }
+
+    @Test
     public void testGetSortedConfigurationItems() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
@@ -686,7 +723,7 @@ public class FillTheFormDialogModelTest {
     @Test
     public void testClickAndFocusedEventsShouldBeIgnoredWhenDialogIsNotVisible() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_CLICKED, selectedConfigurationItems);
@@ -722,7 +759,7 @@ public class FillTheFormDialogModelTest {
     @Test
     public void testLongClickShouldBeIgnoredWhenDialogIsVisibleAndInFastMode() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
@@ -761,7 +798,7 @@ public class FillTheFormDialogModelTest {
     @Test
     public void testItemShouldBeSelectedTwiceAfterTwoLongClicksInNormalMode() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
@@ -781,7 +818,7 @@ public class FillTheFormDialogModelTest {
     @Test
     public void testItemShouldBeSelectedOnceAfterTwoLongClicksInFastMode() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
         model.setFastModeEnabled(true);
 
         // run
@@ -802,7 +839,7 @@ public class FillTheFormDialogModelTest {
     @Test
     public void testItemShouldBeSelectedOnceAfterLongClickThenFocusChangeAndClickInNormalMode() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
@@ -829,7 +866,7 @@ public class FillTheFormDialogModelTest {
     @Test
     public void testItemShouldBeSelectedThreeTimesAfterLongClickThenFocusChangeAndClickInFastMode() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
         model.setFastModeEnabled(true);
 
         // run
@@ -867,7 +904,7 @@ public class FillTheFormDialogModelTest {
     @Test
     public void testHideDialogShouldHideTheDialog() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
@@ -1095,7 +1132,7 @@ public class FillTheFormDialogModelTest {
     @Test
     public void testOnCloseButtonClickedShouldCloseTheDialog() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
@@ -1128,7 +1165,7 @@ public class FillTheFormDialogModelTest {
     @Test
     public void testOnOpenFillTheFormAppButtonClickShouldOpenTheFillTheFormApp() throws Exception {
         // prepare
-        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItems();
+        List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForFirstName();
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);

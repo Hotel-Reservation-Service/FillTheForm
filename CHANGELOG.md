@@ -1,6 +1,9 @@
 #Changelog
 
-## New version
+## v0.8.2
+- Implemented feature to remember input for other ids.
+- Added ActionCallbacks to FillTheFormDialogModel.
+- Minor Dialog UI fixes.
 - Started using DeployGate to distribute latest develop build.
 
 ## v0.8.1

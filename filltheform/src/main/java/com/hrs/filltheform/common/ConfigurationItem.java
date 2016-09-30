@@ -17,6 +17,9 @@ package com.hrs.filltheform.common;
 
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class represents one configuration item.
  */
@@ -27,6 +30,13 @@ public class ConfigurationItem {
     private String rawValue;
     private String value;
     private String label;
+    private List<String> rememberLastEntryForIds = new ArrayList<>();
+    private boolean lastEntryItem;
+
+    public ConfigurationItem(String id, String profile) {
+        this.id = id;
+        this.profile = profile;
+    }
 
     public ConfigurationItem(String id, String profile, String rawValue) {
         this.id = id;
@@ -41,6 +51,13 @@ public class ConfigurationItem {
             this.profile = configurationItem.profile;
             this.rawValue = configurationItem.getRawValue();
             this.value = configurationItem.getValue();
+            this.label = configurationItem.getLabel();
+            if (!configurationItem.getRememberLastEntryForIds().isEmpty()) {
+                for (String id : configurationItem.getRememberLastEntryForIds()) {
+                    rememberLastEntryForIds.add(id);
+                }
+            }
+            this.lastEntryItem = configurationItem.isLastEntryItem();
         }
     }
 
@@ -68,6 +85,10 @@ public class ConfigurationItem {
         this.value = value;
     }
 
+    public void setRawValue(String rawValue) {
+        this.rawValue = rawValue;
+    }
+
     public String getRawValue() {
         return rawValue;
     }
@@ -82,5 +103,25 @@ public class ConfigurationItem {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public boolean isLastEntryItem() {
+        return lastEntryItem;
+    }
+
+    public void setLastEntryItem(boolean lastEntryItem) {
+        this.lastEntryItem = lastEntryItem;
+    }
+
+    public boolean shouldRememberLastEntry() {
+        return !rememberLastEntryForIds.isEmpty();
+    }
+
+    public List<String> getRememberLastEntryForIds() {
+        return rememberLastEntryForIds;
+    }
+
+    public void rememberLastEntryForId(String id) {
+        rememberLastEntryForIds.add(id);
     }
 }

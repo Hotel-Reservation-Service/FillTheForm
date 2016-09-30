@@ -105,6 +105,29 @@ This is the configuration file for the FillTheFormSample app:
             <android_version>&device_model; API is &device_android_version;</android_version>
             <device_ip_address>&device_model; IP is &device_ip_address;</device_ip_address>
         </profile>
+        <profile name="Random Test Profile 2">
+            <first_name>
+                <value>random_first_name</value>
+                <remember_last_entry_for>
+                    <id>email</id>
+                    <id>state</id>
+                    <id>phone</id>
+                    <id>device_model</id>
+                    <id>device_ip_address</id>
+                    <id>comment</id>
+                </remember_last_entry_for>
+            </first_name>
+            <last_name>
+                <value>random_last_name</value>
+                <remember_last_entry_for>
+                    <id>city</id>
+                    <id>country</id>
+                    <id>zip_code</id>
+                    <id>android_version</id>
+                    <id>comment</id>
+                </remember_last_entry_for>
+            </last_name>
+        </profile>
     </profiles>
     <!-- No profile -->
     <first_name>Ivan</first_name>

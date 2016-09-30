@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,7 +65,7 @@ class FillTheFormDialogModel {
     }
 
     /**
-     * Typedef annotation.
+     * Typedef EventType annotation.
      */
     @IntDef({EVENT_TYPE_UNKNOWN,
             EVENT_TYPE_VIEW_LONG_CLICKED,
@@ -78,6 +80,22 @@ class FillTheFormDialogModel {
     public static final int EVENT_TYPE_VIEW_CLICKED = 1;
     public static final int EVENT_TYPE_VIEW_FOCUSED = 8;
 
+    /**
+     * Typedef ViewType annotation.
+     */
+    @IntDef(flag = true, value = {
+            VIEW_TYPE_SELECTED_ITEM,
+            VIEW_TYPE_NORMAL_ITEM,
+            VIEW_TYPE_REMOVABLE_ITEM
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ViewType {
+    }
+
+    public static final int VIEW_TYPE_SELECTED_ITEM = 1;
+    public static final int VIEW_TYPE_NORMAL_ITEM = 1 << 1;
+    public static final int VIEW_TYPE_REMOVABLE_ITEM = 1 << 2;
+
     public static final String PROPERTY_EXPAND_ICON = "property_expand_icon";
     public static final String PROPERTY_EXPAND_ICON_FAST_MODE = "property_expand_icon_fast_mode";
     public static final String PROPERTY_DIALOG_VISIBILITY = "property_dialog_visibility";
@@ -87,9 +105,6 @@ class FillTheFormDialogModel {
     public static final String PROPERTY_FAST_MODE_BUTTON_ICON = "property_fast_mode_button_icon";
     public static final String PROPERTY_DATA_SET = "property_data_set";
     public static final String PROPERTY_DATA_SET_SCROLL_POSITION = "property_data_set_scroll_position";
-
-    public static final int VIEW_TYPE_SELECTED_ITEM = 1;
-    public static final int VIEW_TYPE_NORMAL_ITEM = 2;
 
     private static final int MAX_CLICK_DURATION = 200;
 
@@ -134,6 +149,9 @@ class FillTheFormDialogModel {
     // Fast mode
     private boolean fastModeEnabled;
 
+    // Saved last entries
+    private Map<String, ConfigurationItem> lastEntries = new HashMap<>();
+
     public FillTheFormDialogModel(FillTheFormDialogModelHelper helper) {
         this.helper = helper;
     }
@@ -156,13 +174,39 @@ class FillTheFormDialogModel {
         notifyPropertyChanged(PROPERTY_DATA_SET);
     }
 
+    public void onRemoveItemButtonClicked(int position) {
+        ConfigurationItem configurationItem = sortedConfigurationItems.get(position);
+        lastEntries.remove(configurationItem.getId());
+        sortedConfigurationItems.remove(position);
+        notifyPropertyChanged(PROPERTY_DATA_SET);
+    }
+
     @VisibleForTesting
     String getSelectedConfigItemValue() {
+        if (selectedConfigItem != null && selectedConfigItem.isLastEntryItem()) {
+            return selectedConfigItem.getValue();
+        }
+
         ConfigurationItem preparedConfigurationItem = prepareSelectedConfigurationItemForInput();
         if (preparedConfigurationItem != null) {
-            return preparedConfigurationItem.getValue();
+            String value = preparedConfigurationItem.getValue();
+            if (preparedConfigurationItem.shouldRememberLastEntry()) {
+                rememberLastEntry(preparedConfigurationItem);
+            }
+            return value;
         }
+
         return null;
+    }
+
+    private void rememberLastEntry(ConfigurationItem preparedConfigurationItem) {
+        for (String id : preparedConfigurationItem.getRememberLastEntryForIds()) {
+            ConfigurationItem item = new ConfigurationItem(preparedConfigurationItem);
+            item.setLabel(preparedConfigurationItem.getValue());
+            item.setRawValue(preparedConfigurationItem.getValue());
+            item.setLastEntryItem(true);
+            lastEntries.put(id, item);
+        }
     }
 
     private void setSelectedConfigItem(int position) {
@@ -210,6 +254,24 @@ class FillTheFormDialogModel {
     // Configuration items data
 
     private void setSortedConfigurationItems(List<ConfigurationItem> selectedConfigurationItems) {
+        final List<ConfigurationItem> sortedConfigurationItems = sortConfigurationItems(selectedConfigurationItems);
+        addLastEntryIfAvailable(sortedConfigurationItems);
+        this.sortedConfigurationItems = sortedConfigurationItems;
+    }
+
+    private void addLastEntryIfAvailable(List<ConfigurationItem> sortedConfigurationItems) {
+        if (sortedConfigurationItems.isEmpty()) {
+            return;
+        }
+        String id = sortedConfigurationItems.get(0).getId();
+        if (lastEntries.containsKey(id)) {
+            ConfigurationItem lastEntry = lastEntries.get(id);
+            lastEntry.setId(id);
+            sortedConfigurationItems.add(0, lastEntry);
+        }
+    }
+
+    private List<ConfigurationItem> sortConfigurationItems(List<ConfigurationItem> selectedConfigurationItems) {
         final List<ConfigurationItem> sortedConfigurationItems = new ArrayList<>(selectedConfigurationItems);
 
         // Sort the list by last used profile
@@ -237,8 +299,7 @@ class FillTheFormDialogModel {
                 sortedConfigurationItems.add(0, selectedConfigItem);
             }
         }
-
-        this.sortedConfigurationItems = sortedConfigurationItems;
+        return sortedConfigurationItems;
     }
 
     public List<ConfigurationItem> getSortedConfigurationItems() {
@@ -249,12 +310,18 @@ class FillTheFormDialogModel {
         return sortedConfigurationItems.size();
     }
 
+    @ViewType
     public int getSortedConfigItemType(int position) {
-        if (sortedConfigurationItems != null && position == sortedConfigurationItems.indexOf(selectedConfigItem)) {
-            return VIEW_TYPE_SELECTED_ITEM;
-        } else {
-            return VIEW_TYPE_NORMAL_ITEM;
+        @ViewType int result = VIEW_TYPE_NORMAL_ITEM;
+        if (sortedConfigurationItems != null) {
+            if (position == sortedConfigurationItems.indexOf(selectedConfigItem)) {
+                result = VIEW_TYPE_SELECTED_ITEM;
+            }
+            if (sortedConfigurationItems.get(position).isLastEntryItem()) {
+                result |= VIEW_TYPE_REMOVABLE_ITEM;
+            }
         }
+        return result;
     }
 
     public ConfigurationItem getConfigurationItem(int position) {

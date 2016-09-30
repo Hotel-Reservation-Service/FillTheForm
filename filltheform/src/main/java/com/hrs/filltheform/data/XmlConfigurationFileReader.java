@@ -95,6 +95,7 @@ public class XmlConfigurationFileReader implements ConfigurationReader {
     private void parseConfigurationFile(XmlPullParser parser) throws XmlPullParserException, IOException {
         int eventType = parser.getEventType();
         String profile = null;
+        ConfigurationItem configurationItem = null;
         String name;
 
         while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -107,17 +108,29 @@ public class XmlConfigurationFileReader implements ConfigurationReader {
                         configurationReaderListener.onPackageName(parser.nextText());
                     } else if (name.equalsIgnoreCase("profile")) {
                         profile = parser.getAttributeValue(null, "name");
-                    } else if (profile != null || !isParentName(name)) {
+                    } else if (configurationItem == null && (profile != null || !isParentName(name))) {
                         String label = parser.getAttributeValue(null, "label");
-                        ConfigurationItem configurationItem = new ConfigurationItem(name, profile, parser.nextText());
-                        configurationItem.setLabel(label);
-                        configurationReaderListener.onConfigurationItem(configurationItem);
+                        if (parser.next() == XmlPullParser.TEXT) {
+                            configurationItem = new ConfigurationItem(name, profile, parser.getText());
+                            configurationItem.setLabel(label);
+                            configurationReaderListener.onConfigurationItem(configurationItem);
+                        } else {
+                            configurationItem = new ConfigurationItem(name, profile);
+                        }
+                    } else if (configurationItem != null && (profile != null || !isParentName(name))) {
+                        if (name.equalsIgnoreCase("value")) {
+                            configurationItem.setRawValue(parser.nextText());
+                        } else if (name.equalsIgnoreCase("id")) {
+                            configurationItem.rememberLastEntryForId(parser.nextText());
+                        }
                     }
                     break;
                 case XmlPullParser.END_TAG:
                     name = parser.getName();
                     if (name.equalsIgnoreCase("profile") && profile != null) {
                         profile = null;
+                    } else if (configurationItem != null && name.equalsIgnoreCase(configurationItem.getId())) {
+                        configurationItem = null;
                     }
                     break;
                 default:
