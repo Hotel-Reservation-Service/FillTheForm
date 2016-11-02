@@ -22,9 +22,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -70,8 +73,8 @@ public class FillTheFormDialogModelTest {
         model.setExpandedDialogDimensions(EXPANDED_DIALOG_WIDTH_PX, EXPANDED_DIALOG_HEIGHT_PX);
         model.setStatusBarHeight(STATUS_BAR_HEIGHT_PX);
 
-        // Set configurationVariablePattern
-        model.setConfigurationVariablePattern("&(\\w+);");
+        // Init Dialog with configurationVariablePattern
+        model.init("&(\\w+);");
     }
 
     private FillTheFormDialogModel.FillTheFormDialogModelHelper createModelHelper() {
@@ -277,7 +280,7 @@ public class FillTheFormDialogModelTest {
     public void testWhenConfigurationVariablePatternIsNull() {
         // prepare
         List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForLastName();
-        model.setConfigurationVariablePattern(null);
+        model.init(null);
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
@@ -309,7 +312,7 @@ public class FillTheFormDialogModelTest {
     public void testWhenConfigurationVariablePatternIsEmptyString() {
         // prepare
         List<ConfigurationItem> selectedConfigurationItems = createSelectedConfigurationItemsForLastName();
-        model.setConfigurationVariablePattern("");
+        model.init("");
 
         // run
         model.showDialog(FillTheFormDialogModel.EVENT_TYPE_VIEW_LONG_CLICKED, selectedConfigurationItems);
@@ -1195,5 +1198,40 @@ public class FillTheFormDialogModelTest {
         // verify
         assertTrue(model.isExpandIconVisible());
         verify(propertyChangedListener, times(1)).onPropertyChanged(FillTheFormDialogModel.PROPERTY_EXPAND_ICON);
+    }
+
+    @Test
+    public void testInit() throws Exception {
+        // prepare
+        Map<String, ConfigurationItem> lastEntries = new HashMap<>();
+        lastEntries.put("test_key", new ConfigurationItem("test_id", "test_profile"));
+        Whitebox.setInternalState(model, "lastEntries", lastEntries);
+        Whitebox.setInternalState(model, "selectedConfigItem", new ConfigurationItem("selected_test_id", "selected_test_profile"));
+
+        // run
+        model.init("config_var_pattern");
+
+        // verify
+        assertEquals("config_var_pattern", Whitebox.getInternalState(model, "configurationVariablePattern"));
+        assertEquals(new ConfigurationItem("selected_test_id", "selected_test_profile"), Whitebox.getInternalState(model, "selectedConfigItem"));
+        lastEntries = Whitebox.getInternalState(model, "lastEntries");
+        assertEquals(1, lastEntries.size());
+    }
+
+    @Test
+    public void testClearData() throws Exception {
+        // prepare
+        Map<String, ConfigurationItem> lastEntries = new HashMap<>();
+        lastEntries.put("test_key", new ConfigurationItem("test_id", "test_profile"));
+        Whitebox.setInternalState(model, "lastEntries", lastEntries);
+        Whitebox.setInternalState(model, "selectedConfigItem", new ConfigurationItem("selected_test_id", "selected_test_profile"));
+
+        // run
+        model.clearData();
+
+        // verify
+        assertEquals(null, Whitebox.getInternalState(model, "selectedConfigItem"));
+        lastEntries = Whitebox.getInternalState(model, "lastEntries");
+        assertEquals(0, lastEntries.size());
     }
 }

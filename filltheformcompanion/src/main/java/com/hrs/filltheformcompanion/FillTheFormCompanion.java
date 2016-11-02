@@ -60,6 +60,8 @@ public class FillTheFormCompanion {
     public static final String INTENT_EXTRA_NUMBER_OF_PROFILES = "com.hrs.filltheform.INTENT_EXTRA_NUMBER_OF_PROFILES";
     // Profiles navigation
     public static final String INTENT_SELECT_NEXT_PROFILE = "com.hrs.filltheform.INTENT_SELECT_NEXT_PROFILE";
+    // Dialog data
+    public static final String INTENT_CLEAR_DIALOG_DATA = "com.hrs.filltheform.INTENT_CLEAR_DIALOG_DATA";
 
     private static final int NO_PROFILES = 0;
 
@@ -163,6 +165,12 @@ public class FillTheFormCompanion {
     public void selectNextProfile() {
         sendBroadcast(INTENT_SELECT_NEXT_PROFILE);
 
+    }
+
+    // Dialog data
+
+    public void clearDialogData() {
+        sendBroadcast(INTENT_CLEAR_DIALOG_DATA);
     }
 
     // Broadcast actions

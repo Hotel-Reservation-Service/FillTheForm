@@ -381,7 +381,16 @@ class FillTheFormDialogModel {
         return sb.toString();
     }
 
-    public void setConfigurationVariablePattern(String configurationVariablePattern) {
+    void init(String configurationVariablePattern) {
+        setConfigurationVariablePattern(configurationVariablePattern);
+    }
+
+    void clearData() {
+        this.lastEntries.clear();
+        this.selectedConfigItem = null;
+    }
+
+    private void setConfigurationVariablePattern(String configurationVariablePattern) {
         this.configurationVariablePattern = configurationVariablePattern;
     }
 

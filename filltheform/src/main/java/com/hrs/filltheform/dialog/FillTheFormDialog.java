@@ -118,10 +118,12 @@ public class FillTheFormDialog implements PropertyChangedListener, FillTheFormDi
         }
     }
 
-    public void setConfigurationVariablePattern(String configurationVariablePattern) {
-        if (model != null && configurationVariablePattern != null) {
-            model.setConfigurationVariablePattern(configurationVariablePattern);
-        }
+    public void init(String configurationVariablePattern) {
+        model.init(configurationVariablePattern);
+    }
+
+    public void clearData() {
+        model.clearData();
     }
 
     private int getStatusBarHeight() {

@@ -1,5 +1,8 @@
 #Changelog
 
+## v0.8.3
+- Added clear Dialog data action to companion.
+
 ## v0.8.2
 - Implemented feature to remember input for other ids.
 - Added ActionCallbacks to FillTheFormDialogModel.

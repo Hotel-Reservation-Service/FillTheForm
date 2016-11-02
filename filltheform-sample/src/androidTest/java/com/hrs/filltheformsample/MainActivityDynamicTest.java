@@ -120,6 +120,8 @@ public class MainActivityDynamicTest {
             throw new FillTheFormCompanionException("No profiles available. Please configure FillTheForm.");
         }
 
+        companion.clearDialogData();
+
         for (int i = 0; i < numberOfProfiles; i++) {
             clickOnEveryEditTextField(i == 0);
             companion.selectNextProfile();

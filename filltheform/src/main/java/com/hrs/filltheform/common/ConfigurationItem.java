@@ -124,4 +124,34 @@ public class ConfigurationItem {
     public void rememberLastEntryForId(String id) {
         rememberLastEntryForIds.add(id);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ConfigurationItem)) return false;
+
+        ConfigurationItem that = (ConfigurationItem) o;
+
+        if (lastEntryItem != that.lastEntryItem) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (profile != null ? !profile.equals(that.profile) : that.profile != null) return false;
+        if (rawValue != null ? !rawValue.equals(that.rawValue) : that.rawValue != null)
+            return false;
+        if (value != null ? !value.equals(that.value) : that.value != null) return false;
+        if (label != null ? !label.equals(that.label) : that.label != null) return false;
+        return rememberLastEntryForIds != null ? rememberLastEntryForIds.equals(that.rememberLastEntryForIds) : that.rememberLastEntryForIds == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (profile != null ? profile.hashCode() : 0);
+        result = 31 * result + (rawValue != null ? rawValue.hashCode() : 0);
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        result = 31 * result + (label != null ? label.hashCode() : 0);
+        result = 31 * result + (rememberLastEntryForIds != null ? rememberLastEntryForIds.hashCode() : 0);
+        result = 31 * result + (lastEntryItem ? 1 : 0);
+        return result;
+    }
 }

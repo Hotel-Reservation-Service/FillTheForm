@@ -8,8 +8,8 @@ android {
         applicationId "com.hrs.filltheform"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 4
-        versionName "0.8.2"
+        versionCode 5
+        versionName "0.8.3"
     }
 
     def isCi = "true".equals(System.getenv("CI"))

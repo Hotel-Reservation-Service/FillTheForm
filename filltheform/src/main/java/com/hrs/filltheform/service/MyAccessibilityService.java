@@ -158,6 +158,7 @@ public class MyAccessibilityService extends android.accessibilityservice.Accessi
         intentFilter.addAction(FillTheFormCompanion.INTENT_SET_NORMAL_MODE);
         intentFilter.addAction(FillTheFormCompanion.INTENT_REQUEST_NUMBER_OF_PROFILES);
         intentFilter.addAction(FillTheFormCompanion.INTENT_SELECT_NEXT_PROFILE);
+        intentFilter.addAction(FillTheFormCompanion.INTENT_CLEAR_DIALOG_DATA);
     }
 
     private void checkCompanionActions(Intent intent) {
@@ -171,7 +172,7 @@ public class MyAccessibilityService extends android.accessibilityservice.Accessi
                 String configurationFilePath = intent.getStringExtra(FillTheFormCompanion.INTENT_EXTRA_CONFIGURATION_FILE_PATH);
                 @FillTheFormCompanion.ConfigurationSource int configurationFileSource = intent.getIntExtra(FillTheFormCompanion.INTENT_EXTRA_CONFIGURATION_FILE_SOURCE, FillTheFormCompanion.SOURCE_ASSETS);
                 configuration.init(this, configurationFileSource, configurationFilePath);
-                fillTheFormDialog.setConfigurationVariablePattern(configuration.getConfigurationVariablePattern());
+                fillTheFormDialog.init(configuration.getConfigurationVariablePattern());
                 break;
             case FillTheFormCompanion.INTENT_HIDE_FILL_THE_FORM_DIALOG:
                 fillTheFormDialog.hideDialog();
@@ -193,6 +194,8 @@ public class MyAccessibilityService extends android.accessibilityservice.Accessi
             case FillTheFormCompanion.INTENT_SELECT_NEXT_PROFILE:
                 fillTheFormDialog.selectNextProfile();
                 break;
+            case FillTheFormCompanion.INTENT_CLEAR_DIALOG_DATA:
+                fillTheFormDialog.clearData();
             default:
                 break;
         }
